@@ -1,0 +1,45 @@
+generated: '2026-07-19'
+method: derived
+source: openapi/evermuse-ingest-v1-openapi-original.yml
+format: custom-json
+envelope:
+  fields: [error, message, retryAfter, details]
+  note: |-
+    Evermuse returns a custom JSON error envelope (not RFC 9457 application/problem+json):
+    `error` is a machine-readable code, `message` is human-readable, `retryAfter` appears on
+    429s, `details` carries optional machine-readable context. Per-record ingest failures are
+    reported inside a 400 IngestAcceptedResponse-style body as an `errors[]` array with
+    index/code/message.
+problems:
+- status: 400
+  title: Bad Request
+  description: Something was wrong with the submitted data; check the per-record errors[] array.
+  source_operation: openapi/evermuse-ingest-v1-openapi-original.yml#ingestRecords
+- status: 401
+  title: Unauthorized
+  description: The x-api-key header is missing or invalid.
+  source_operation: openapi/evermuse-ingest-v1-openapi-original.yml#ingestRecords
+- status: 403
+  title: Forbidden
+  description: The API key lacks the required api:write permission.
+  source_operation: openapi/evermuse-ingest-v1-openapi-original.yml#ingestRecords
+- status: 404
+  title: Batch not found
+  description: The batch ID does not exist or belongs to a different workspace.
+  source_operation: openapi/evermuse-ingest-v1-openapi-original.yml#getBatchStatus
+- status: 413
+  title: Payload too large
+  description: The request body exceeds the maximum allowed size (5 MB).
+  source_operation: openapi/evermuse-ingest-v1-openapi-original.yml#ingestRecords
+- status: 429
+  title: Rate limit exceeded
+  description: Retry after the number of seconds indicated in the retryAfter field.
+  source_operation: openapi/evermuse-ingest-v1-openapi-original.yml#ingestRecords
+- status: 500
+  title: Internal server error
+  description: Please retry the request.
+  source_operation: openapi/evermuse-ingest-v1-openapi-original.yml#ingestRecords
+record_error_codes:
+- code: VALIDATION_ERROR
+  description: A record failed validation against the Integration Envelope schema.
+  source: openapi/evermuse-ingest-v1-openapi-original.yml#IngestRecordError

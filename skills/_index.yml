@@ -1,0 +1,12 @@
+generated: '2026-07-19'
+method: generated
+source: openapi/evermuse-ingest-v1-openapi-original.yml
+skills:
+- file: evermuse-ingest-and-track.md
+  name: Ingest records and track the batch
+  api: openapi/evermuse-ingest-v1-openapi-original.yml
+  operations: [ingestRecords, getBatchStatus]
+- file: evermuse-list-batches.md
+  name: Audit recent ingestion batches
+  api: openapi/evermuse-ingest-v1-openapi-original.yml
+  operations: [listBatches, getBatchStatus]

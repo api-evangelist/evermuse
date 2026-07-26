@@ -1,0 +1,55 @@
+generated: '2026-07-19'
+method: searched
+source: openapi/evermuse-ingest-v1-openapi-original.yml
+docs: https://docs.evermuse.com/
+authentication:
+  style: api-key-header
+  header: x-api-key
+  key_format: em_sk_
+  detail: authentication/evermuse-authentication.yml
+idempotency:
+  supported: true
+  header: Idempotency-Key
+  scope: /api/v1/ingest
+  max_length: 256
+  semantics: |-
+    Optional. If a request with the same key and identical body has already been accepted,
+    the original response is returned without reprocessing the data. Recommended when
+    retrying failed submissions.
+  source: openapi/evermuse-ingest-v1-openapi-original.yml#ingestRecords
+deduplication:
+  keys: [_type, _vendor_ids, _event_at]
+  semantics: |-
+    Records identified by the same _type, _vendor_ids, and _event_at are recognized as
+    the same record; a re-send overwrites the previous version instead of duplicating.
+pagination:
+  style: cursor
+  request_params: [limit, cursor]
+  limit_default: 20
+  limit_max: 100
+  response_field: nextCursor
+  order: newest-first
+  source: openapi/evermuse-ingest-v1-openapi-original.yml#listBatches
+content_types:
+  request:
+  - application/json
+  - application/x-ndjson
+  detail: |-
+    JSON accepts an array of records or a { "records": [...] } wrapper. NDJSON (one JSON
+    object per line) is recommended for high-volume sends. All records in one request must
+    share the same _type and _product_id; max 1,000 records; max 5 MB body.
+error_envelope:
+  shape: { error: string, message: string, retryAfter: number, details: object }
+  format: custom-json
+  note: Not RFC 9457 problem+json. See errors/evermuse-problem-types.yml.
+rate_limiting:
+  signal: 429 response with `retryAfter` (seconds) in the JSON body
+  detail: lifecycle/evermuse-lifecycle.yml
+versioning:
+  scheme: uri-path
+  current: v1
+  base_path: /api/v1
+async_processing:
+  model: batch
+  status_endpoint: /api/v1/ingest/batches/{batchId}
+  states: [LANDING, LANDED, PROCESSING, COMPLETE, FAILED]

@@ -1,25 +1,141 @@
 aid: evermuse
 name: Evermuse
-description: Evermuse is a company surfaced as a portfolio company of 500-global and added to the API
-  Evangelist network as a stub for enrichment. This profile is a lead awaiting the enrichment pipeline.
+description: >-
+  Evermuse is an AI advisor for product teams that turns every customer signal —
+  sales and success calls, support conversations, meeting notes, emails, surveys,
+  and reviews — into code-ready, well-researched feature specifications. Its
+  Ingestion API accepts records wrapped in a canonical Integration Envelope (JSON
+  or NDJSON), validates, normalizes, deduplicates, and stores them in the Evermuse
+  Data Lake for AI analysis into user needs, feature requests, and prioritized
+  opportunities. Evermuse also publishes a hosted, OAuth 2.1-protected Model Context
+  Protocol (MCP) server that plugs Claude, ChatGPT, Cursor, and other agents directly
+  into a workspace's real customer evidence and live roadmap.
 url: https://raw.githubusercontent.com/api-evangelist/evermuse/refs/heads/main/apis.yml
 x-type: company
 x-source: vc-portfolio
 x-backed-by:
 - 500-global
-x-tier: stub
-x-tier-reason: portfolio-lead
+accessModel:
+  pricing: unknown
+  onboarding: self-serve
+  trial: false
+  try_now: false
+  public: false
+  label: Self-serve signup
+  confidence: medium
+  source:
+  - authentication
+  generated: '2026-07-22'
+  method: derived
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-17'
+modified: '2026-07-19'
+image: https://www.evermuse.com/og-image.png
 tags:
 - Company
-apis: []
+- Product Management
+- Customer Feedback
+- Voice of Customer
+- Artificial Intelligence
+- Data Ingestion
+- Product Analytics
+- MCP
+- Developer Tools
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
+apis:
+- aid: evermuse:evermuse-ingestion-api
+  name: Evermuse ingestion API
+  description: Send data to Evermuse
+  humanURL: https://docs.evermuse.com/
+  baseURL: https://api.evermuse.com
+  tags:
+  - ingestion
+  properties:
+  - type: OpenAPI
+    url: openapi/evermuse-ingestion-api-openapi.yml
+  - type: Documentation
+    url: https://docs.evermuse.com/
+  - type: APIReference
+    url: https://docs.evermuse.com/api-reference/index
+  - type: GettingStarted
+    url: https://docs.evermuse.com/
+  - type: Authentication
+    url: authentication/evermuse-authentication.yml
+  - type: OAuthScopes
+    url: scopes/evermuse-scopes.yml
+  - type: Idempotency
+    url: conventions/evermuse-conventions.yml
+  - type: Conventions
+    url: conventions/evermuse-conventions.yml
+  - type: ErrorCatalog
+    url: errors/evermuse-problem-types.yml
+  - type: DataModel
+    url: data-model/evermuse-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/evermuse-agentic-access.yml
 common:
 - type: Website
   url: https://evermuse.com
+- type: DeveloperPortal
+  url: https://docs.evermuse.com/
+- type: Documentation
+  url: https://docs.evermuse.com/
+- type: APIReference
+  url: https://docs.evermuse.com/api-reference/index
+- type: GettingStarted
+  url: https://docs.evermuse.com/
+- type: Blog
+  url: https://www.evermuse.com/blog
+- type: Support
+  url: https://www.evermuse.com/contact
+- type: Pricing
+  url: https://www.evermuse.com/pricing
+- type: SignUp
+  url: https://app.evermuse.com/
+- type: TermsOfService
+  url: https://www.evermuse.com/tos
+- type: PrivacyPolicy
+  url: https://www.evermuse.com/privacy-policy
+- type: StatusPage
+  url: https://evermuse.checkly-status-page.com/
+- type: ChangeLog
+  url: changelog/evermuse-changelog.yml
+- type: Lifecycle
+  url: lifecycle/evermuse-lifecycle.yml
+- type: Authentication
+  url: authentication/evermuse-authentication.yml
+- type: OAuthScopes
+  url: scopes/evermuse-scopes.yml
+- type: Idempotency
+  url: conventions/evermuse-conventions.yml
+- type: Conventions
+  url: conventions/evermuse-conventions.yml
+- type: MCPServer
+  url: mcp/evermuse-mcp.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: WellKnown
+  url: well-known/evermuse-well-known.yml
+- type: Conformance
+  url: conformance/evermuse-conformance.yml
+- type: Compliance
+  url: https://www.evermuse.com/security
+- type: TrustCenter
+  url: security/evermuse-trust-center.yml
+- type: Security
+  url: https://www.evermuse.com/security
+- type: VulnerabilityDisclosure
+  url: security/evermuse-vulnerability-disclosure.yml
+- type: DomainSecurity
+  url: security/evermuse-domain-security.yml
+- type: AgenticAccess
+  url: agentic-access/evermuse-agentic-access.yml
+x-enrichment:
+  date: '2026-07-19'
+  status: backfilled
+  pass: local-v1
+  note: backfilled from .gitignore signal + verified work evidence

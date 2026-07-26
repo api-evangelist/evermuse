@@ -1,0 +1,15 @@
+# Evermuse API
+
+## Docs
+
+- [API Reference](https://docs.evermuse.com/api-reference/index.md): Explore the Evermuse API endpoints for data ingestion and batch management.
+- [/ingest/batches/{batchId}](https://docs.evermuse.com/api-reference/ingestion/get-batch-status.md): Returns the current status and record counts for a batch you submitted.
+- [/ingest/batches](https://docs.evermuse.com/api-reference/ingestion/get-batches.md): Returns a paginated list of batches you've submitted, newest first.
+- [/ingest](https://docs.evermuse.com/api-reference/ingestion/ingest.md): Submit records.
+- [Authentication](https://docs.evermuse.com/authentication.md): How to authenticate requests to the Evermuse Ingestion API.
+- [Data Lake](https://docs.evermuse.com/data-lake.md): How ingested data is stored, deduplicated, and monitored in the Evermuse Data Lake.
+- [Evermuse API](https://docs.evermuse.com/index.md): Official API documentation for the Evermuse platform.
+
+## OpenAPI Specs
+
+- [ingest-v1](https://docs.evermuse.com/openapi/ingest-v1.yaml)

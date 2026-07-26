@@ -1,0 +1,1 @@
+{"resource":"https://api.evermuse.com/api/mcp","authorization_servers":["https://api.evermuse.com"],"scopes_supported":["mcp:read","mcp:write","mcp:thirdparty"],"bearer_methods_supported":["header"],"resource_signing_alg_values_supported":["RS256"]}

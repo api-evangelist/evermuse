@@ -1,0 +1,30 @@
+generated: '2026-07-19'
+method: searched
+source: well-known/evermuse-oauth-authorization-server.json
+docs: https://docs.evermuse.com/authentication
+note: |-
+  OAuth 2.1 scopes gate the hosted Evermuse MCP server (https://api.evermuse.com/api/mcp),
+  not the REST Ingestion API (which uses `x-api-key` keys carrying `api:read`/`api:write`
+  permissions). Scopes are advertised in the RFC 8414 authorization-server metadata and
+  the RFC 9728 protected-resource metadata.
+schemes:
+- name: EvermuseOAuth
+  source: well-known/evermuse-oauth-authorization-server.json
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://api.evermuse.com/oauth/authorize
+    tokenUrl: https://api.evermuse.com/oauth/token
+    pkce: S256
+scopes:
+- scope: mcp:read
+  description: Read access via the Evermuse MCP server (query customer evidence, roadmap, insights).
+  flows: [authorizationCode]
+  sources: [well-known/evermuse-oauth-authorization-server.json]
+- scope: mcp:write
+  description: Write access via the Evermuse MCP server.
+  flows: [authorizationCode]
+  sources: [well-known/evermuse-oauth-authorization-server.json]
+- scope: mcp:thirdparty
+  description: Third-party / delegated access via the Evermuse MCP server.
+  flows: [authorizationCode]
+  sources: [well-known/evermuse-oauth-authorization-server.json]

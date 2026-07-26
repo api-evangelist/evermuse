@@ -1,0 +1,15 @@
+generated: '2026-07-19'
+method: searched
+probe: true
+source: https://www.evermuse.com/security
+url: https://www.evermuse.com/security
+certifications:
+- SOC 2
+- GDPR
+evidence:
+- source: https://www.evermuse.com/security
+  keywords:
+  - soc 2
+  - soc2
+  - compliance certification
+  - gdpr

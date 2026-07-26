@@ -1,0 +1,20 @@
+generated: '2026-07-19'
+method: searched
+source: https://docs.evermuse.com/
+versioning:
+  scheme: uri-path
+  current: v1
+  base_path: /api/v1
+  docs: https://docs.evermuse.com/
+status_page: https://evermuse.checkly-status-page.com/
+changelog: https://www.evermuse.com/changelog
+deprecation:
+  policy_url: null
+  sunset_header: false
+  note: No published deprecation/sunset policy found as of this pass.
+deprecated_operations: []
+sla:
+  url: null
+  note: |-
+    No public SLA/uptime target found; overage-billing terms and a Checkly-hosted status
+    page are published. Data-deletion requests honored within 30 days (security page).

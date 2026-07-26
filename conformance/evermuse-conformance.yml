@@ -1,0 +1,43 @@
+generated: '2026-07-19'
+method: searched
+source: openapi/evermuse-ingest-v1-openapi-original.yml
+standards:
+- id: oauth2
+  conforms: true
+  evidence: OAuth 2.1 authorization server for the MCP surface; authorization_code + refresh_token grants.
+- id: oauth2.1-pkce
+  conforms: true
+  evidence: code_challenge_methods_supported [S256] in oauth-authorization-server metadata.
+- id: rfc8414-authorization-server-metadata
+  conforms: true
+  evidence: /.well-known/oauth-authorization-server returns 200 with issuer/endpoints/scopes.
+- id: rfc9728-protected-resource-metadata
+  conforms: true
+  evidence: /.well-known/oauth-protected-resource returns 200 with resource + authorization_servers.
+- id: rfc7591-dynamic-client-registration
+  conforms: true
+  evidence: registration_endpoint https://api.evermuse.com/oauth/register advertised.
+- id: mcp
+  conforms: true
+  evidence: Two published Model Context Protocol servers (product + docs), verified via initialize.
+- id: idempotency
+  conforms: true
+  evidence: Idempotency-Key header on POST /api/v1/ingest.
+- id: cursor-pagination
+  conforms: true
+  evidence: limit/cursor request params and nextCursor response field on list endpoint.
+- id: ndjson-streaming
+  conforms: true
+  evidence: application/x-ndjson accepted for high-volume ingest.
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: Custom JSON error envelope (error/message/retryAfter/details), not application/problem+json.
+- id: openid-connect
+  conforms: false
+  evidence: No /.well-known/openid-configuration (404); OAuth authorization server only.
+- id: soc2-type2
+  conforms: true
+  evidence: SOC 2 Type 2 certified (Sensiba LLP); see security/evermuse-trust-center.yml.
+- id: gdpr
+  conforms: true
+  evidence: GDPR compliant, Data Processor role, DPA available; security page.

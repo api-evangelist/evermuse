@@ -1,0 +1,40 @@
+generated: '2026-07-19'
+method: searched
+status: published
+source: https://www.evermuse.com/mcp
+servers:
+- name: evermuse
+  label: Evermuse MCP
+  transport: http
+  url: https://api.evermuse.com/api/mcp
+  status: published
+  auth:
+    type: oauth2.1
+    authorization_server: https://api.evermuse.com/.well-known/oauth-authorization-server
+    protected_resource: https://api.evermuse.com/.well-known/oauth-protected-resource
+    scopes: [mcp:read, mcp:write, mcp:thirdparty]
+    pkce: S256
+    dynamic_client_registration: https://api.evermuse.com/oauth/register
+  description: |-
+    Product MCP server that plugs any MCP-compatible agent (Claude, ChatGPT, Cursor,
+    Linear, GitHub, Slack) into a workspace's customer evidence — interviews, sales
+    calls, feedback, quotes, competitor intel, and the live roadmap. SOC 2 Type II,
+    GDPR-ready, OAuth 2.1, zero data retention by clients. Requires a default product
+    and an mcp:read/mcp:write scoped token. Tool inventory not enumerated (auth-gated).
+- name: evermuse-docs
+  label: Evermuse API docs MCP
+  transport: http
+  url: https://docs.evermuse.com/mcp
+  status: published
+  auth:
+    type: none
+  description: |-
+    Mintlify-hosted documentation MCP server. Read-only search and retrieval over the
+    public Evermuse API docs; verified live via initialize/tools/list.
+  tools:
+  - name: search_evermuse_api
+    description: Search across the Evermuse API knowledge base to find relevant information and code.
+  - name: query_docs_filesystem_evermuse_api
+    description: Run a read-only shell-like query against a virtualized in-memory docs filesystem.
+  - name: submit_feedback
+    description: Report a problem with the documentation site to the docs team.

@@ -1,0 +1,14 @@
+{
+  "provider": "evermuse",
+  "sources": [
+    "evermuse-ingestion-api-openapi.yml"
+  ],
+  "outputs": [
+    "evermuse-ingestion-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}

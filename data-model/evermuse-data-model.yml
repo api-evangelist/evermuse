@@ -1,0 +1,53 @@
+generated: '2026-07-19'
+method: derived
+source: openapi/evermuse-ingest-v1-openapi-original.yml
+entities:
+- name: IngestRecord
+  description: A single unit of ingested data wrapped in the canonical Integration Envelope.
+  key_fields: [_type, _vendor_ids, _event_at]
+  fields: [_type, _schema_version, _event_at, _vendor_ids, _thread_id, _participants, _attachments, _tags, _nature, _product_id, _project_ids, _pii, data]
+- name: Participant
+  description: A person involved in an event (attribution/filtering).
+  fields: [id, name, email, role, type]
+- name: Attachment
+  description: A file associated with a record, fetched from vendor_url or upload_intent_id.
+  fields: [type, filename, size, mime_type, sha1, md5, vendor_url, upload_intent_id]
+- name: Pii
+  description: Optional metadata about personal information in a record.
+  fields: [contains_email, contains_phone, sensitive_score, detected_entities, redaction_status]
+- name: PiiEntity
+  description: A single detected PII item.
+  fields: [type, value, confidence]
+- name: Batch
+  description: A submitted set of records tracked through a processing lifecycle.
+  key_fields: [batchId]
+  fields: [batchId, status, createdAt, acceptedCount, rejectedCount, totalErrorCount, errors, source, type, attachmentDownload*]
+relationships:
+- from: IngestRecord
+  to: Participant
+  type: has_many
+  via: _participants
+- from: IngestRecord
+  to: Attachment
+  type: has_many
+  via: _attachments
+- from: IngestRecord
+  to: Pii
+  type: has_one
+  via: _pii
+- from: Pii
+  to: PiiEntity
+  type: has_many
+  via: detected_entities
+- from: Batch
+  to: IngestRecord
+  type: has_many
+  via: submitted records (batch groups records sharing _type + _product_id)
+- from: IngestRecord
+  to: Product
+  type: belongs_to
+  via: _product_id
+- from: IngestRecord
+  to: Project
+  type: has_many
+  via: _project_ids

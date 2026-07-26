@@ -1,0 +1,30 @@
+generated: '2026-07-19'
+method: searched
+source: https://www.evermuse.com/changelog
+scheme: dated-release-notes
+current_version: null
+note: |-
+  Evermuse publishes a dated, human-readable changelog covering features, fixes,
+  performance, and security. Entries below are the recent window captured this pass;
+  the live page is the source of truth.
+entries:
+- date: '2026-05-19'
+  title: Chat attachments & meeting assignment fixes
+  type: fix
+  breaking: false
+  highlights:
+  - 'Chat: replace multer with direct busboy parsing for Cloud Functions v2 — restores attachment uploads.'
+  - 'Meetings: restore product_id when a meeting is reassigned to a project, with a backfill migration.'
+  - 'Backend: new atomic sync endpoint for meeting-project assignments.'
+- date: '2026-05-12'
+  title: 'Billing hotfix: subscribed workspaces in overage'
+  type: fix
+  breaking: false
+  highlights:
+  - 'Billing: allow subscribed workspaces that have entered overage to continue using the service.'
+- date: '2026-05-11'
+  title: Chargebee usage sync & dependency pin
+  type: fix
+  breaking: false
+  highlights:
+  - 'Billing: report all subscribed-workspace credit usage to Chargebee.'

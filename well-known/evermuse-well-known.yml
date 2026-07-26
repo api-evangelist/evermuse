@@ -1,0 +1,20 @@
+generated: '2026-07-19'
+method: searched
+host: https://api.evermuse.com
+documents:
+- path: /.well-known/oauth-authorization-server
+  status: 200
+  file: evermuse-oauth-authorization-server.json
+  standard: RFC 8414
+- path: /.well-known/oauth-protected-resource
+  status: 200
+  file: evermuse-oauth-protected-resource.json
+  standard: RFC 9728
+- path: /.well-known/security.txt
+  status: 404
+- path: /.well-known/openid-configuration
+  status: 404
+- path: /.well-known/api-catalog
+  status: 404
+- path: /.well-known/ai-plugin.json
+  status: 404

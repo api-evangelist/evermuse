@@ -1,0 +1,23 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Evermuse Ingestion API
+  version: 1.0.0
+extends: openapi/evermuse-ingest-v1-openapi-original.yml
+actions:
+- target: $.info
+  update:
+    x-apievangelist-enriched: '2026-07-19'
+    x-apievangelist-conventions: conventions/evermuse-conventions.yml
+    x-apievangelist-errors: errors/evermuse-problem-types.yml
+    x-apievangelist-authentication: authentication/evermuse-authentication.yml
+    x-apievangelist-data-model: data-model/evermuse-data-model.yml
+- target: $.paths['/api/v1/ingest'].post
+  update:
+    x-apievangelist-idempotent: true
+    x-apievangelist-idempotency-header: Idempotency-Key
+- target: $.paths['/api/v1/ingest/batches'].get
+  update:
+    x-apievangelist-pagination: cursor
+- target: $.tags[?(@.name=='ingestion')]
+  update:
+    x-apievangelist-note: Canonical Integration Envelope ingestion for the Evermuse data lake.

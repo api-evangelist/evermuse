@@ -1,0 +1,764 @@
+openapi: 3.1.0
+info:
+  title: Evermuse API
+  version: 1.0.0
+  description: |
+    The Evermuse API lets you send your data into Evermuse for analysis.
+    Each record describes *what* happened and *when*, then you send it as JSON or newline-delimited JSON (NDJSON).
+
+    ## Quick start
+
+    1. Create an API key in **Settings > API Keys** with the `api:write` permission.
+    2. `POST /api/v1/ingest` with your records (see examples below).
+    3. Check `GET /api/v1/ingest/batches/{batchId}` to track progress.
+
+    ## Authentication
+
+    Every request must include an `x-api-key` header with your API key (`em_sk_...`).
+
+    ## Content types
+
+    | Content-Type | Use case |
+    |---|---|
+    | `application/json` | Array of records, or `{ "records": [...] }` wrapper |
+    | `application/x-ndjson` | High-volume sends — one JSON object per line |
+
+    ## Batching
+
+    All records in a single request must share the same `_type` and `_product_id`.
+    A batch can contain up to 1,000 records.
+
+servers:
+  - url: https://api.evermuse.com
+    description: Evermuse API
+
+tags:
+  - name: ingestion
+    description: Send data to Evermuse
+
+paths:
+  /api/v1/ingest:
+    post:
+      operationId: ingestRecords
+      tags: [ingestion]
+      summary: /ingest
+      x-mint:
+        href: /api-reference/ingestion/ingest
+      description: |
+        Submit records.
+
+        The request body accepts two formats:
+        - An array of record objects
+        - An object with a `records` key containing an array
+
+        For high-volume sends, use `application/x-ndjson` (one JSON object per line).
+
+        Attachments referenced by `vendor_url` are fetched automatically after the batch is accepted.
+        Download progress is available on the batch status endpoint.
+      security:
+        - IngestApiKey: []
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: false
+          schema:
+            type: string
+            maxLength: 256
+          description: |
+            Optional key to prevent duplicate submissions.
+            If a request with the same key and identical body has already been accepted,
+            you'll get back the original response without the data being processed again.
+            Recommended when retrying failed requests.
+        - name: format
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [text, audio, video, file]
+          description: |
+            Optional hint that describes the primary content format of the records.
+            This does not affect validation but helps optimize how your data is processed.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IngestRequest'
+            examples:
+              recordBatch:
+                summary: Batch via JSON array
+                value:
+                  - _type: conversation
+                    _schema_version: 1.0.0
+                    _event_at: 2026-02-24T12:34:56Z
+                    _nature: evidence
+                    _vendor_ids:
+                      conversation_id: 'conv-001'
+                    _product_id: 'prod-abc'
+                    _project_ids: ['proj-123']
+                    data:
+                      messages:
+                        - sender: 'agent'
+                          text: 'How can I help you today?'
+                        - sender: 'customer'
+                          text: 'I have a question about billing.'
+                  - _type: conversation
+                    _schema_version: 1.0.0
+                    _event_at: 2026-02-24T12:40:00Z
+                    _nature: evidence
+                    _vendor_ids:
+                      conversation_id: 'conv-002'
+                    _product_id: 'prod-abc'
+                    _project_ids: ['proj-123']
+                    data:
+                      messages:
+                        - sender: 'customer'
+                          text: 'Can I upgrade my plan?'
+              recordsWrapper:
+                summary: Batch via records wrapper
+                value:
+                  records:
+                    - _type: email
+                      _schema_version: 1.0.0
+                      _event_at: 2026-02-24T12:34:56Z
+                      _nature: evidence
+                      _vendor_ids:
+                        message_id: 'msg-20260224-001'
+                      _thread_id: 'thread-acme-inquiry'
+                      _participants:
+                        - id: alice@acme.com
+                          name: Alice Johnson
+                          email: alice@acme.com
+                          role: external
+                          type: contact
+                        - id: bob@yourcompany.com
+                          name: Bob Smith
+                          email: bob@yourcompany.com
+                          role: internal
+                          type: user
+                      _product_id: 'prod-abc'
+                      _project_ids: ['proj-123']
+                      _tags:
+                        - product-feedback
+                        - enterprise
+                      data:
+                        subject: 'Re: Product feedback'
+                        from: alice@acme.com
+                        to: bob@yourcompany.com
+                        body: "We'd love to see dark mode support in the next release."
+              recordWithAttachment:
+                summary: Record with a downloadable attachment
+                value:
+                  - _type: meeting_notes
+                    _schema_version: 1.0.0
+                    _event_at: 2026-02-24T15:00:00Z
+                    _nature: evidence
+                    _product_id: 'prod-abc'
+                    _project_ids: ['proj-123']
+                    _vendor_ids:
+                      meeting_id: 'mtg-456'
+                    _attachments:
+                      - type: audio
+                        filename: 'meeting-recording.mp3'
+                        mime_type: 'audio/mpeg'
+                        vendor_url: 'https://storage.example.com/recordings/mtg-456.mp3'
+                    data:
+                      title: 'Weekly product sync'
+                      duration_minutes: 45
+              guidanceRecord:
+                summary: Internal guidance document
+                value:
+                  - _type: meeting_notes
+                    _schema_version: 1.0.0
+                    _event_at: 2026-02-24T10:00:00Z
+                    _nature: guidance
+                    _vendor_ids:
+                      doc_id: 'okr-q2-2026'
+                    _product_id: 'prod-abc'
+                    _project_ids: ['proj-456']
+                    data:
+                      title: 'Q2 2026 OKRs'
+                      body: 'Objective: Improve onboarding conversion by 20%'
+          application/x-ndjson:
+            schema:
+              type: string
+              description: |
+                Newline-delimited JSON. Each line is a single record object.
+            examples:
+              ndjsonExample:
+                summary: NDJSON (two records)
+                value: |
+                  {"_type":"email","_schema_version":"1.0.0","_event_at":"2026-02-24T12:34:56Z","_nature":"evidence","_vendor_ids":{"message_id":"msg-001"},"_product_id":"prod-abc","_project_ids":["proj-123"],"data":{"subject":"Hello","body":"World"}}
+                  {"_type":"email","_schema_version":"1.0.0","_event_at":"2026-02-24T12:40:00Z","_nature":"evidence","_vendor_ids":{"message_id":"msg-002"},"_product_id":"prod-abc","_project_ids":["proj-123"],"data":{"subject":"Follow-up","body":"Thanks"}}
+      responses:
+        '202':
+          description: |
+            Accepted. Your records have been received and are being processed.
+            Use the returned `batchId` with `GET /api/v1/ingest/batches/{batchId}` to check progress.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestAcceptedResponse'
+        '400':
+          description: |
+            Bad Request. Something was wrong with the data you sent.
+            Check the `errors` array for details on which records were rejected and why.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized. The `x-api-key` header is missing or invalid.
+        '403':
+          description: Forbidden. The API key does not have the required `api:write` permission.
+        '413':
+          description: Payload too large. The request body exceeds the maximum allowed size (5 MB).
+        '429':
+          description: |
+            Rate limit exceeded. Retry after the number of seconds indicated in the `retryAfter` field.
+        '500':
+          description: Internal server error. Please retry the request.
+
+  /api/v1/ingest/batches:
+    get:
+      operationId: listBatches
+      tags: [ingestion]
+      summary: /ingest/batches
+      x-mint:
+        href: /api-reference/ingestion/get-batches
+      description: |
+        Returns a paginated list of batches you've submitted, newest first.
+
+        Use the `nextCursor` value from the response as the `cursor` query parameter to fetch the next page.
+      security:
+        - IngestApiKey: []
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: |
+            Number of batches to return per page. Defaults to 20, maximum 100.
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: string
+            maxLength: 256
+          description: |
+            Pagination cursor from a previous response's `nextCursor` field.
+            Omit to start from the most recent batch.
+      responses:
+        '200':
+          description: A page of batches.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestBatchListResponse'
+        '401':
+          description: Unauthorized. The `x-api-key` header is missing or invalid.
+        '403':
+          description: Forbidden. The API key does not have the required permission.
+        '500':
+          description: Internal server error. Please retry the request.
+
+  /api/v1/ingest/batches/{batchId}:
+    get:
+      operationId: getBatchStatus
+      tags: [ingestion]
+      summary: /ingest/batches/{batchId}
+      x-mint:
+        href: /api-reference/ingestion/get-batch-status
+      description: |
+        Returns the current status and record counts for a batch you submitted.
+
+        Use this to check whether your records have finished processing.
+
+        ### Batch lifecycle
+
+        | Status | Meaning |
+        |---|---|
+        | `LANDING` | Your data is being saved |
+        | `LANDED` | Your data is saved and waiting to be processed |
+        | `PROCESSING` | Your records are being analyzed |
+        | `COMPLETE` | All records have been processed |
+        | `FAILED` | Something went wrong (check errors for details) |
+      security:
+        - IngestApiKey: []
+      parameters:
+        - name: batchId
+          in: path
+          required: true
+          schema:
+            type: string
+            maxLength: 128
+          description: The batch ID returned when you sent your records.
+      responses:
+        '200':
+          description: Batch status retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestBatchStatus'
+        '401':
+          description: Unauthorized. The `x-api-key` header is missing or invalid.
+        '403':
+          description: Forbidden. The API key does not have the required permission.
+        '404':
+          description: Batch not found. The batch ID does not exist or belongs to a different workspace.
+        '500':
+          description: Internal server error. Please retry the request.
+
+components:
+  securitySchemes:
+    IngestApiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: |
+        Your API key, sent as the `x-api-key` header.
+        Create one in **Settings > API Keys** with `api:write` permission.
+        Format: `em_sk_...`
+
+  schemas:
+    IngestRequest:
+      description: |
+        The request body accepts two shapes:
+        - An array of record objects (up to 1,000)
+        - An object with a `records` key containing an array
+      oneOf:
+        - type: array
+          minItems: 1
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/IngestRecord'
+        - type: object
+          additionalProperties: false
+          required: [records]
+          properties:
+            records:
+              type: array
+              minItems: 1
+              maxItems: 1000
+              items:
+                $ref: '#/components/schemas/IngestRecord'
+
+    IngestRecord:
+      type: object
+      additionalProperties: false
+      required:
+        - _type
+        - _schema_version
+        - _event_at
+        - _vendor_ids
+        - _product_id
+        - _project_ids
+        - _nature
+        - data
+      properties:
+        _type:
+          type: string
+          enum:
+            - email_thread
+            - email
+            - meeting_notes
+            - call
+            - call_transcription
+            - conversation
+            - message
+            - document
+            - spreadsheet
+          description: |
+            The type of data you're sending. All records in a single batch must share the same type.
+
+            - `email_thread` — A full email conversation chain (multiple messages grouped together).
+            - `email` — A single email message.
+            - `meeting_notes` — Notes, summaries, or transcripts captured during or after a meeting.
+            - `call` — An audio or video call record (recording url will be provided by the caller in the attachment).
+            - `call_transcription` — A verbatim transcription of a phone or video call.
+            - `conversation` — A multi-turn conversation from chat platforms (e.g. Slack, Intercom, Drift, support tickets).
+            - `message` — A single standalone message (e.g. SMS, or in-app feedback).
+            - `document` — A generic document (e.g. PDF, Word doc, or other written material).
+            - `spreadsheet` — A spreadsheet or tabular data file (e.g. CSV, Excel).
+        _schema_version:
+          type: string
+          description: |
+            Schema version. Use `"1.0.0"`.
+          example: '1.0.0'
+        _event_at:
+          type: string
+          description: |
+            When the original event occurred, as an ISO-8601 UTC timestamp.
+            Milliseconds are accepted but truncated to second precision.
+          pattern: '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$'
+          example: '2026-02-24T12:34:56Z'
+        _vendor_ids:
+          type: object
+          description: |
+            One or more IDs from your source system. Must contain at least one entry.
+            Used to prevent duplicates — records with the same `_type`, `_vendor_ids`, and `_event_at`
+            are recognized as the same record and won't be processed twice.
+          minProperties: 1
+          additionalProperties:
+            type: string
+          example:
+            message_id: 'msg-20260224-001'
+        _thread_id:
+          type: string
+          description: |
+            Optional ID that groups related records into a thread
+            (e.g., an email chain, a multi-message chat, or a series of related calls).
+            Use the thread or conversation ID from your source system.
+          maxLength: 512
+        _participants:
+          type: array
+          description: |
+            People involved in the event. Used for attribution and filtering in your Evermuse dashboard.
+          maxItems: 5000
+          items:
+            $ref: '#/components/schemas/Participant'
+        _attachments:
+          type: array
+          description: |
+            Files associated with this record (recordings, documents, images, etc.).
+            Provide a `vendor_url` for files hosted elsewhere — they will be fetched automatically.
+            Alternatively, use `upload_intent_id` to reference a file you've already uploaded.
+          maxItems: 10
+          items:
+            $ref: '#/components/schemas/Attachment'
+        _tags:
+          type: array
+          description: |
+            Free-form labels for categorization and filtering (e.g., `"enterprise"`, `"product-feedback"`, `"q1-2026"`).
+          maxItems: 200
+          items:
+            type: string
+            maxLength: 64
+        _nature:
+          type: string
+          enum: [evidence, guidance, context]
+          description: |
+            Classifies how this record should be treated during analysis.
+            - `evidence` — actual customer conversations, meeting notes, support tickets, etc.
+            - `guidance` — internal product team conversations, OKR documents, company goals
+            - `context` — supplementary material used for context but not as a source of customer evidence
+        _product_id:
+          type: string
+          description: |
+            The Evermuse product ID to route records to.
+            Found in **Settings > Projects > Actions > Copy** in the Evermuse dashboard.
+            All records in a batch must share the same `_product_id`.
+          maxLength: 128
+        _project_ids:
+          type: array
+          description: |
+            One or more Evermuse project IDs to route records to.
+            Found in **Settings > Projects > Actions > Copy** in the Evermuse dashboard.
+          minItems: 1
+          items:
+            type: string
+            maxLength: 128
+        _pii:
+          $ref: '#/components/schemas/Pii'
+        data:
+          type: object
+          description: |
+            Your data. Include all relevant fields from your source system.
+            This is stored exactly as you send it.
+          additionalProperties: true
+
+    Participant:
+      type: object
+      additionalProperties: false
+      required: [id, role]
+      properties:
+        id:
+          type: string
+          description: |
+            A stable identifier for the participant. Use an email address, phone number,
+            or their ID from your source system.
+          maxLength: 256
+        name:
+          type: string
+          description: Display name of the participant.
+          maxLength: 256
+        email:
+          type: string
+          format: email
+          description: Email address of the participant.
+          maxLength: 320
+        role:
+          type: string
+          enum: [internal, external, unknown]
+          description: |
+            Whether the participant is part of your team or an external contact.
+            - `internal` — your team member (employee, agent, rep)
+            - `external` — a customer, prospect, or outside party
+            - `unknown` — role cannot be determined
+        type:
+          type: string
+          enum: [user, contact, workspace_member, bot, system, unknown]
+          description: |
+            The kind of participant.
+            - `user` — a human user
+            - `contact` — a customer or prospect
+            - `workspace_member` — a member of your workspace
+            - `bot` — an automated agent
+            - `system` — a system-generated entry
+            - `unknown` — type cannot be determined
+
+    Attachment:
+      type: object
+      additionalProperties: false
+      required: [type]
+      properties:
+        type:
+          type: string
+          enum: [audio, video, file, image, text, unknown]
+          description: |
+            The kind of attachment.
+            - `audio` — audio recording (e.g., call recording, voice memo)
+            - `video` — video recording
+            - `file` — generic file (PDF, spreadsheet, etc.)
+            - `image` — image file (screenshot, photo, etc.)
+            - `text` — plain text content
+            - `unknown` — type cannot be determined
+        filename:
+          type: string
+          description: Original filename of the attachment.
+          maxLength: 512
+        size:
+          type: integer
+          description: File size in bytes.
+          minimum: 0
+        mime_type:
+          type: string
+          description: MIME type of the file (e.g., `audio/mpeg`, `application/pdf`).
+          maxLength: 256
+        sha1:
+          type: string
+          description: SHA-1 hash of the file contents (for integrity verification).
+          maxLength: 128
+        md5:
+          type: string
+          description: MD5 hash of the file contents (for integrity verification).
+          maxLength: 128
+        vendor_url:
+          type: string
+          format: uri
+          description: |
+            URL where the file can be downloaded. Evermuse will fetch it automatically
+            after the batch is accepted. Download progress is available on the batch status endpoint.
+          maxLength: 2048
+        upload_intent_id:
+          type: string
+          description: |
+            Reference to a file you've already uploaded.
+            Use this to attach a previously uploaded file to this record.
+          maxLength: 256
+
+    Pii:
+      type: object
+      additionalProperties: false
+      description: |
+        Optional metadata about personal information in this record.
+        Providing this helps Evermuse handle your data with the right privacy safeguards.
+      properties:
+        contains_email:
+          type: boolean
+          description: Whether the record's data contains email addresses.
+        contains_phone:
+          type: boolean
+          description: Whether the record's data contains phone numbers.
+        sensitive_score:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: |
+            A score from 0 to 1 indicating the likelihood that the record contains sensitive information.
+            0 = no sensitive content, 1 = highly sensitive.
+        detected_entities:
+          type: array
+          description: List of personal information types detected in the record.
+          items:
+            $ref: '#/components/schemas/PiiEntity'
+        redaction_status:
+          type: string
+          enum: [unredacted, redacted, encrypted]
+          description: |
+            Whether personal information in this record has been redacted or encrypted before sending.
+
+    PiiEntity:
+      type: object
+      additionalProperties: false
+      required: [type]
+      properties:
+        type:
+          type: string
+          description: The category of personal information detected (e.g., `email`, `phone`, `ssn`, `credit_card`).
+          maxLength: 64
+        value:
+          type: string
+          description: The detected value (omit if you prefer not to include it).
+          maxLength: 1024
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Confidence score for the detection (0 = low, 1 = high).
+
+    IngestAcceptedResponse:
+      type: object
+      additionalProperties: false
+      required: [batchId, acceptedCount, rejectedCount, totalErrorCount]
+      properties:
+        batchId:
+          type: string
+          description: |
+            Unique identifier for this batch. Use it with `GET /api/v1/ingest/batches/{batchId}` to check status.
+          maxLength: 128
+        acceptedCount:
+          type: integer
+          minimum: 0
+          description: Number of records that passed validation and were accepted.
+        rejectedCount:
+          type: integer
+          minimum: 0
+          description: Number of records that failed validation and were rejected.
+        totalErrorCount:
+          type: integer
+          minimum: 0
+          description: |
+            Total number of errors across all rejected records.
+            May be higher than the `errors` array length since only the first 20 are included.
+        errors:
+          type: array
+          description: |
+            Up to 20 errors. The `index` field refers to the record's
+            position in the batch you sent (starting from 0).
+          maxItems: 20
+          items:
+            $ref: '#/components/schemas/IngestRecordError'
+
+    IngestRecordError:
+      type: object
+      additionalProperties: false
+      required: [index, code, message]
+      properties:
+        index:
+          type: integer
+          minimum: 0
+          description: Position of the rejected record in the submitted batch (0-based).
+        code:
+          type: string
+          maxLength: 64
+          description: Machine-readable error code (e.g., `VALIDATION_ERROR`).
+        message:
+          type: string
+          maxLength: 2048
+          description: Human-readable description of what went wrong.
+
+    IngestBatchStatus:
+      type: object
+      additionalProperties: false
+      required: [batchId, status, acceptedCount, rejectedCount, totalErrorCount, createdAt]
+      properties:
+        batchId:
+          type: string
+          maxLength: 128
+          description: Unique identifier for this batch.
+        status:
+          type: string
+          enum: [LANDING, LANDED, PROCESSING, COMPLETE, FAILED]
+          description: |
+            Current processing status of the batch.
+            See the batch lifecycle table in the endpoint description.
+        createdAt:
+          type: number
+          description: When the batch was created, as Unix epoch milliseconds.
+          example: 1709282096000
+        acceptedCount:
+          type: integer
+          minimum: 0
+          description: Number of records that passed validation.
+        rejectedCount:
+          type: integer
+          minimum: 0
+          description: Number of records that failed validation.
+        totalErrorCount:
+          type: integer
+          minimum: 0
+          description: Total number of validation errors across rejected records.
+        errors:
+          type: array
+          description: Up to 20 validation errors for quick inspection.
+          maxItems: 20
+          items:
+            $ref: '#/components/schemas/IngestRecordError'
+        source:
+          type: string
+          description: Where the records in this batch came from.
+        type:
+          type: string
+          description: The record type for this batch.
+        attachmentDownloadTotal:
+          type: integer
+          minimum: 0
+          description: Total number of attachments to be downloaded (shown when the batch includes file attachments).
+        attachmentDownloadComplete:
+          type: integer
+          minimum: 0
+          description: Number of attachments successfully downloaded.
+        attachmentDownloadFailed:
+          type: integer
+          minimum: 0
+          description: Number of attachments that failed to download.
+        attachmentDownloadStatus:
+          type: string
+          enum: [PENDING, IN_PROGRESS, COMPLETE, PARTIAL_FAILURE, FAILED]
+          description: |
+            Overall download status for the batch's attachments.
+            Only shown when the batch includes file attachments.
+
+    IngestBatchListResponse:
+      type: object
+      additionalProperties: false
+      required: [batches, nextCursor]
+      properties:
+        batches:
+          type: array
+          description: List of batches, ordered by creation time (newest first).
+          items:
+            $ref: '#/components/schemas/IngestBatchStatus'
+        nextCursor:
+          type: string
+          nullable: true
+          maxLength: 256
+          description: |
+            Pass this value as the `cursor` query parameter to fetch the next page.
+            `null` when there are no more results.
+
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [error, message]
+      properties:
+        error:
+          type: string
+          maxLength: 64
+          description: Machine-readable error code.
+        message:
+          type: string
+          maxLength: 2048
+          description: Human-readable error description.
+        retryAfter:
+          type: number
+          description: |
+            Number of seconds to wait before trying again. Included when you've hit the rate limit (429 response).
+        details:
+          description: Additional machine-readable context about the error.
+          additionalProperties: true
