@@ -78,6 +78,8 @@ apis:
   - type: AgenticAccess
     url: agentic-access/evermuse-agentic-access.yml
 common:
+- type: Overlay
+  url: overlays/evermuse-ingest-v1-overlay.yaml
 - type: Website
   url: https://evermuse.com
 - type: DeveloperPortal
