@@ -1,0 +1,109 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Evermuse ingestion API",
+    "version": "1.0.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "ingestion",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "/ingest",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.evermuse.com/api/v1/ingest",
+            "headers": [
+              {
+                "name": "Idempotency-Key",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "format",
+                "value": "",
+                "type": "query",
+                "description": "Optional hint that describes the primary content format of the records.\nThis does not affect validation but helps optimize how your data is processed.\n"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "apikey",
+              "key": "x-api-key",
+              "value": "{{x-api-key}}",
+              "placement": "header"
+            }
+          },
+          "docs": "Submit records.\n\nThe request body accepts two formats:\n- An array of record objects\n- An object with a `records` key containing an array\n\nFor high-volume sends, use `application/x-ndjson` (one JSON object per line).\n\nAttachments referenced by `vendor_url` are fetched automatically after the batch is accepted.\nDownload progress is available on the batch status endpoint.\n"
+        },
+        {
+          "info": {
+            "name": "/ingest/batches",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.evermuse.com/api/v1/ingest/batches",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Number of batches to return per page. Defaults to 20, maximum 100.\n"
+              },
+              {
+                "name": "cursor",
+                "value": "",
+                "type": "query",
+                "description": "Pagination cursor from a previous response's `nextCursor` field.\nOmit to start from the most recent batch.\n"
+              }
+            ],
+            "auth": {
+              "type": "apikey",
+              "key": "x-api-key",
+              "value": "{{x-api-key}}",
+              "placement": "header"
+            }
+          },
+          "docs": "Returns a paginated list of batches you've submitted, newest first.\n\nUse the `nextCursor` value from the response as the `cursor` query parameter to fetch the next page.\n"
+        },
+        {
+          "info": {
+            "name": "/ingest/batches/{batchId}",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.evermuse.com/api/v1/ingest/batches/:batchId",
+            "params": [
+              {
+                "name": "batchId",
+                "value": "",
+                "type": "path",
+                "description": "The batch ID returned when you sent your records."
+              }
+            ],
+            "auth": {
+              "type": "apikey",
+              "key": "x-api-key",
+              "value": "{{x-api-key}}",
+              "placement": "header"
+            }
+          },
+          "docs": "Returns the current status and record counts for a batch you submitted.\n\nUse this to check whether your records have finished processing.\n\n### Batch lifecycle\n\n| Status | Meaning |\n|---|---|\n| `LANDING` | Your data is being saved |\n| `LANDED` | Your data is saved and waiting to be processed |\n| `PROCESSING` | Your records are being analyzed |\n| `COMPLETE` | All records have been processed |\n| `FAILED` | Something went wrong (check errors for details) |\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

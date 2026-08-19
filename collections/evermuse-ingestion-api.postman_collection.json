@@ -1,0 +1,1136 @@
+{
+  "item": [
+    {
+      "id": "4d03da8a-23d2-4c6f-9fcf-bd4d3c321684",
+      "name": "ingestion",
+      "description": {
+        "content": "Send data to Evermuse",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "4954411a-bdc6-4480-83e9-4be843f76e37",
+          "name": "/ingest",
+          "request": {
+            "name": "/ingest",
+            "description": {
+              "content": "Submit records.\n\nThe request body accepts two formats:\n- An array of record objects\n- An object with a `records` key containing an array\n\nFor high-volume sends, use `application/x-ndjson` (one JSON object per line).\n\nAttachments referenced by `vendor_url` are fetched automatically after the batch is accepted.\nDownload progress is available on the batch status endpoint.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "ingest"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "format",
+                  "value": "<string>",
+                  "description": "Optional hint that describes the primary content format of the records.\nThis does not affect validation but helps optimize how your data is processed.\n"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "Optional key to prevent duplicate submissions.\nIf a request with the same key and identical body has already been accepted,\nyou'll get back the original response without the data being processed again.\nRecommended when retrying failed requests.\n",
+                "key": "Idempotency-Key",
+                "value": "<string>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "apikey",
+              "apikey": [
+                {
+                  "key": "key",
+                  "value": "x-api-key"
+                },
+                {
+                  "key": "value",
+                  "value": "{{apiKey}}"
+                },
+                {
+                  "key": "in",
+                  "value": "header"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"_type\": \"<string>\",\n    \"_schema_version\": \"<string>\",\n    \"_event_at\": \"<string>\",\n    \"_vendor_ids\": {\n      \"key_0\": \"<string>\"\n    },\n    \"_product_id\": \"<string>\",\n    \"_project_ids\": [\n      \"<string>\"\n    ],\n    \"_nature\": \"<string>\",\n    \"data\": {\n      \"key_0\": true,\n      \"key_1\": \"string\",\n      \"key_2\": 5498.890542499814\n    },\n    \"_thread_id\": \"<string>\",\n    \"_participants\": [\n      {\n        \"id\": \"<string>\",\n        \"role\": \"<string>\",\n        \"name\": \"<string>\",\n        \"email\": \"<email>\",\n        \"type\": \"<string>\"\n      },\n      {\n        \"id\": \"<string>\",\n        \"role\": \"<string>\",\n        \"name\": \"<string>\",\n        \"email\": \"<email>\",\n        \"type\": \"<string>\"\n      }\n    ],\n    \"_attachments\": [\n      {\n        \"type\": \"<string>\",\n        \"filename\": \"<string>\",\n        \"size\": \"<integer>\",\n        \"mime_type\": \"<string>\",\n        \"sha1\": \"<string>\",\n        \"md5\": \"<string>\",\n        \"vendor_url\": \"<uri>\",\n        \"upload_intent_id\": \"<string>\"\n      },\n      {\n        \"type\": \"<string>\",\n        \"filename\": \"<string>\",\n        \"size\": \"<integer>\",\n        \"mime_type\": \"<string>\",\n        \"sha1\": \"<string>\",\n        \"md5\": \"<string>\",\n        \"vendor_url\": \"<uri>\",\n        \"upload_intent_id\": \"<string>\"\n      }\n    ],\n    \"_tags\": [\n      \"<string>\",\n      \"<string>\"\n    ],\n    \"_pii\": {\n      \"contains_email\": \"<boolean>\",\n      \"contains_phone\": \"<boolean>\",\n      \"sensitive_score\": \"<number>\",\n      \"detected_entities\": [\n        {\n          \"type\": \"<string>\",\n          \"value\": \"<string>\",\n          \"confidence\": \"<number>\"\n        },\n        {\n          \"type\": \"<string>\",\n          \"value\": \"<string>\",\n          \"confidence\": \"<number>\"\n        }\n      ],\n      \"redaction_status\": \"<string>\"\n    }\n  }\n]",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "a0bb83ec-de0d-4311-8d92-a2e0ba47e444",
+              "name": "Accepted. Your records have been received and are being processed.\nUse the returned `batchId` with `GET /api/v1/ingest/batches/{batchId}` to check progress.\n",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "ingest"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "format",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional key to prevent duplicate submissions.\nIf a request with the same key and identical body has already been accepted,\nyou'll get back the original response without the data being processed again.\nRecommended when retrying failed requests.\n",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "[\n  {\n    \"_type\": \"conversation\",\n    \"_schema_version\": \"1.0.0\",\n    \"_event_at\": \"2026-02-24 12:34:56+00:00\",\n    \"_nature\": \"evidence\",\n    \"_vendor_ids\": {\n      \"conversation_id\": \"conv-001\"\n    },\n    \"_product_id\": \"prod-abc\",\n    \"_project_ids\": [\n      \"proj-123\"\n    ],\n    \"data\": {\n      \"messages\": [\n        {\n          \"sender\": \"agent\",\n          \"text\": \"How can I help you today?\"\n        },\n        {\n          \"sender\": \"customer\",\n          \"text\": \"I have a question about billing.\"\n        }\n      ]\n    }\n  },\n  {\n    \"_type\": \"conversation\",\n    \"_schema_version\": \"1.0.0\",\n    \"_event_at\": \"2026-02-24 12:40:00+00:00\",\n    \"_nature\": \"evidence\",\n    \"_vendor_ids\": {\n      \"conversation_id\": \"conv-002\"\n    },\n    \"_product_id\": \"prod-abc\",\n    \"_project_ids\": [\n      \"proj-123\"\n    ],\n    \"data\": {\n      \"messages\": [\n        {\n          \"sender\": \"customer\",\n          \"text\": \"Can I upgrade my plan?\"\n        }\n      ]\n    }\n  }\n]",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Accepted",
+              "code": 202,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"batchId\": \"string\",\n  \"acceptedCount\": 583,\n  \"rejectedCount\": 8760,\n  \"totalErrorCount\": 7240,\n  \"errors\": [\n    {\n      \"index\": 4389,\n      \"code\": \"string\",\n      \"message\": \"string\"\n    },\n    {\n      \"index\": 589,\n      \"code\": \"string\",\n      \"message\": \"string\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "a0a21376-f855-4d72-9000-e9e8f15a8934",
+              "name": "Bad Request. Something was wrong with the data you sent.\nCheck the `errors` array for details on which records were rejected and why.\n",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "ingest"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "format",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional key to prevent duplicate submissions.\nIf a request with the same key and identical body has already been accepted,\nyou'll get back the original response without the data being processed again.\nRecommended when retrying failed requests.\n",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "[\n  {\n    \"_type\": \"conversation\",\n    \"_schema_version\": \"1.0.0\",\n    \"_event_at\": \"2026-02-24 12:34:56+00:00\",\n    \"_nature\": \"evidence\",\n    \"_vendor_ids\": {\n      \"conversation_id\": \"conv-001\"\n    },\n    \"_product_id\": \"prod-abc\",\n    \"_project_ids\": [\n      \"proj-123\"\n    ],\n    \"data\": {\n      \"messages\": [\n        {\n          \"sender\": \"agent\",\n          \"text\": \"How can I help you today?\"\n        },\n        {\n          \"sender\": \"customer\",\n          \"text\": \"I have a question about billing.\"\n        }\n      ]\n    }\n  },\n  {\n    \"_type\": \"conversation\",\n    \"_schema_version\": \"1.0.0\",\n    \"_event_at\": \"2026-02-24 12:40:00+00:00\",\n    \"_nature\": \"evidence\",\n    \"_vendor_ids\": {\n      \"conversation_id\": \"conv-002\"\n    },\n    \"_product_id\": \"prod-abc\",\n    \"_project_ids\": [\n      \"proj-123\"\n    ],\n    \"data\": {\n      \"messages\": [\n        {\n          \"sender\": \"customer\",\n          \"text\": \"Can I upgrade my plan?\"\n        }\n      ]\n    }\n  }\n]",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"string\",\n  \"message\": \"string\",\n  \"retryAfter\": 2806.193957927001,\n  \"details\": {\n    \"key_0\": 5331,\n    \"key_1\": 1795.6452995763107\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "b873b372-ce72-4107-93d5-9d7e99ece8ba",
+              "name": "Unauthorized. The `x-api-key` header is missing or invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "ingest"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "format",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional key to prevent duplicate submissions.\nIf a request with the same key and identical body has already been accepted,\nyou'll get back the original response without the data being processed again.\nRecommended when retrying failed requests.\n",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "[\n  {\n    \"_type\": \"conversation\",\n    \"_schema_version\": \"1.0.0\",\n    \"_event_at\": \"2026-02-24 12:34:56+00:00\",\n    \"_nature\": \"evidence\",\n    \"_vendor_ids\": {\n      \"conversation_id\": \"conv-001\"\n    },\n    \"_product_id\": \"prod-abc\",\n    \"_project_ids\": [\n      \"proj-123\"\n    ],\n    \"data\": {\n      \"messages\": [\n        {\n          \"sender\": \"agent\",\n          \"text\": \"How can I help you today?\"\n        },\n        {\n          \"sender\": \"customer\",\n          \"text\": \"I have a question about billing.\"\n        }\n      ]\n    }\n  },\n  {\n    \"_type\": \"conversation\",\n    \"_schema_version\": \"1.0.0\",\n    \"_event_at\": \"2026-02-24 12:40:00+00:00\",\n    \"_nature\": \"evidence\",\n    \"_vendor_ids\": {\n      \"conversation_id\": \"conv-002\"\n    },\n    \"_product_id\": \"prod-abc\",\n    \"_project_ids\": [\n      \"proj-123\"\n    ],\n    \"data\": {\n      \"messages\": [\n        {\n          \"sender\": \"customer\",\n          \"text\": \"Can I upgrade my plan?\"\n        }\n      ]\n    }\n  }\n]",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "4daaee09-604d-4e14-914f-958730d981c5",
+              "name": "Forbidden. The API key does not have the required `api:write` permission.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "ingest"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "format",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional key to prevent duplicate submissions.\nIf a request with the same key and identical body has already been accepted,\nyou'll get back the original response without the data being processed again.\nRecommended when retrying failed requests.\n",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "[\n  {\n    \"_type\": \"conversation\",\n    \"_schema_version\": \"1.0.0\",\n    \"_event_at\": \"2026-02-24 12:34:56+00:00\",\n    \"_nature\": \"evidence\",\n    \"_vendor_ids\": {\n      \"conversation_id\": \"conv-001\"\n    },\n    \"_product_id\": \"prod-abc\",\n    \"_project_ids\": [\n      \"proj-123\"\n    ],\n    \"data\": {\n      \"messages\": [\n        {\n          \"sender\": \"agent\",\n          \"text\": \"How can I help you today?\"\n        },\n        {\n          \"sender\": \"customer\",\n          \"text\": \"I have a question about billing.\"\n        }\n      ]\n    }\n  },\n  {\n    \"_type\": \"conversation\",\n    \"_schema_version\": \"1.0.0\",\n    \"_event_at\": \"2026-02-24 12:40:00+00:00\",\n    \"_nature\": \"evidence\",\n    \"_vendor_ids\": {\n      \"conversation_id\": \"conv-002\"\n    },\n    \"_product_id\": \"prod-abc\",\n    \"_project_ids\": [\n      \"proj-123\"\n    ],\n    \"data\": {\n      \"messages\": [\n        {\n          \"sender\": \"customer\",\n          \"text\": \"Can I upgrade my plan?\"\n        }\n      ]\n    }\n  }\n]",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "c1f0a007-f65f-4d03-9ab7-17d1d7711fd6",
+              "name": "Payload too large. The request body exceeds the maximum allowed size (5 MB).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "ingest"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "format",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional key to prevent duplicate submissions.\nIf a request with the same key and identical body has already been accepted,\nyou'll get back the original response without the data being processed again.\nRecommended when retrying failed requests.\n",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "[\n  {\n    \"_type\": \"conversation\",\n    \"_schema_version\": \"1.0.0\",\n    \"_event_at\": \"2026-02-24 12:34:56+00:00\",\n    \"_nature\": \"evidence\",\n    \"_vendor_ids\": {\n      \"conversation_id\": \"conv-001\"\n    },\n    \"_product_id\": \"prod-abc\",\n    \"_project_ids\": [\n      \"proj-123\"\n    ],\n    \"data\": {\n      \"messages\": [\n        {\n          \"sender\": \"agent\",\n          \"text\": \"How can I help you today?\"\n        },\n        {\n          \"sender\": \"customer\",\n          \"text\": \"I have a question about billing.\"\n        }\n      ]\n    }\n  },\n  {\n    \"_type\": \"conversation\",\n    \"_schema_version\": \"1.0.0\",\n    \"_event_at\": \"2026-02-24 12:40:00+00:00\",\n    \"_nature\": \"evidence\",\n    \"_vendor_ids\": {\n      \"conversation_id\": \"conv-002\"\n    },\n    \"_product_id\": \"prod-abc\",\n    \"_project_ids\": [\n      \"proj-123\"\n    ],\n    \"data\": {\n      \"messages\": [\n        {\n          \"sender\": \"customer\",\n          \"text\": \"Can I upgrade my plan?\"\n        }\n      ]\n    }\n  }\n]",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Request Entity Too Large",
+              "code": 413,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "62dd3ef6-8f19-4662-b4a6-653f15b6bac0",
+              "name": "Rate limit exceeded. Retry after the number of seconds indicated in the `retryAfter` field.\n",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "ingest"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "format",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional key to prevent duplicate submissions.\nIf a request with the same key and identical body has already been accepted,\nyou'll get back the original response without the data being processed again.\nRecommended when retrying failed requests.\n",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "[\n  {\n    \"_type\": \"conversation\",\n    \"_schema_version\": \"1.0.0\",\n    \"_event_at\": \"2026-02-24 12:34:56+00:00\",\n    \"_nature\": \"evidence\",\n    \"_vendor_ids\": {\n      \"conversation_id\": \"conv-001\"\n    },\n    \"_product_id\": \"prod-abc\",\n    \"_project_ids\": [\n      \"proj-123\"\n    ],\n    \"data\": {\n      \"messages\": [\n        {\n          \"sender\": \"agent\",\n          \"text\": \"How can I help you today?\"\n        },\n        {\n          \"sender\": \"customer\",\n          \"text\": \"I have a question about billing.\"\n        }\n      ]\n    }\n  },\n  {\n    \"_type\": \"conversation\",\n    \"_schema_version\": \"1.0.0\",\n    \"_event_at\": \"2026-02-24 12:40:00+00:00\",\n    \"_nature\": \"evidence\",\n    \"_vendor_ids\": {\n      \"conversation_id\": \"conv-002\"\n    },\n    \"_product_id\": \"prod-abc\",\n    \"_project_ids\": [\n      \"proj-123\"\n    ],\n    \"data\": {\n      \"messages\": [\n        {\n          \"sender\": \"customer\",\n          \"text\": \"Can I upgrade my plan?\"\n        }\n      ]\n    }\n  }\n]",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "333cf0dc-f887-40b3-a148-af562bae30dd",
+              "name": "Internal server error. Please retry the request.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "ingest"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "format",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "disabled": false,
+                    "description": "Optional key to prevent duplicate submissions.\nIf a request with the same key and identical body has already been accepted,\nyou'll get back the original response without the data being processed again.\nRecommended when retrying failed requests.\n",
+                    "key": "Idempotency-Key",
+                    "value": "<string>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "[\n  {\n    \"_type\": \"conversation\",\n    \"_schema_version\": \"1.0.0\",\n    \"_event_at\": \"2026-02-24 12:34:56+00:00\",\n    \"_nature\": \"evidence\",\n    \"_vendor_ids\": {\n      \"conversation_id\": \"conv-001\"\n    },\n    \"_product_id\": \"prod-abc\",\n    \"_project_ids\": [\n      \"proj-123\"\n    ],\n    \"data\": {\n      \"messages\": [\n        {\n          \"sender\": \"agent\",\n          \"text\": \"How can I help you today?\"\n        },\n        {\n          \"sender\": \"customer\",\n          \"text\": \"I have a question about billing.\"\n        }\n      ]\n    }\n  },\n  {\n    \"_type\": \"conversation\",\n    \"_schema_version\": \"1.0.0\",\n    \"_event_at\": \"2026-02-24 12:40:00+00:00\",\n    \"_nature\": \"evidence\",\n    \"_vendor_ids\": {\n      \"conversation_id\": \"conv-002\"\n    },\n    \"_product_id\": \"prod-abc\",\n    \"_project_ids\": [\n      \"proj-123\"\n    ],\n    \"data\": {\n      \"messages\": [\n        {\n          \"sender\": \"customer\",\n          \"text\": \"Can I upgrade my plan?\"\n        }\n      ]\n    }\n  }\n]",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "51a273f7-b388-400f-86cf-1beefddc2602",
+          "name": "/ingest/batches",
+          "request": {
+            "name": "/ingest/batches",
+            "description": {
+              "content": "Returns a paginated list of batches you've submitted, newest first.\n\nUse the `nextCursor` value from the response as the `cursor` query parameter to fetch the next page.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "ingest",
+                "batches"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Number of batches to return per page. Defaults to 20, maximum 100.\n"
+                },
+                {
+                  "disabled": false,
+                  "key": "cursor",
+                  "value": "<string>",
+                  "description": "Pagination cursor from a previous response's `nextCursor` field.\nOmit to start from the most recent batch.\n"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "apikey",
+              "apikey": [
+                {
+                  "key": "key",
+                  "value": "x-api-key"
+                },
+                {
+                  "key": "value",
+                  "value": "{{apiKey}}"
+                },
+                {
+                  "key": "in",
+                  "value": "header"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "fcdae0d5-efd7-4e97-beaf-b716280c2216",
+              "name": "A page of batches.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "ingest",
+                    "batches"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    },
+                    {
+                      "key": "cursor",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"batches\": [\n    {\n      \"batchId\": \"string\",\n      \"status\": \"LANDED\",\n      \"acceptedCount\": 6190,\n      \"rejectedCount\": 9677,\n      \"totalErrorCount\": 7809,\n      \"createdAt\": 1709282096000,\n      \"errors\": [\n        {\n          \"index\": 9982,\n          \"code\": \"string\",\n          \"message\": \"string\"\n        },\n        {\n          \"index\": 9319,\n          \"code\": \"string\",\n          \"message\": \"string\"\n        }\n      ],\n      \"source\": \"string\",\n      \"type\": \"string\",\n      \"attachmentDownloadTotal\": 5562,\n      \"attachmentDownloadComplete\": 9625,\n      \"attachmentDownloadFailed\": 4985,\n      \"attachmentDownloadStatus\": \"PENDING\"\n    },\n    {\n      \"batchId\": \"string\",\n      \"status\": \"COMPLETE\",\n      \"acceptedCount\": 9214,\n      \"rejectedCount\": 7545,\n      \"totalErrorCount\": 7124,\n      \"createdAt\": 1709282096000,\n      \"errors\": [\n        {\n          \"index\": 4246,\n          \"code\": \"string\",\n          \"message\": \"string\"\n        },\n        {\n          \"index\": 6931,\n          \"code\": \"string\",\n          \"message\": \"string\"\n        }\n      ],\n      \"source\": \"string\",\n      \"type\": \"string\",\n      \"attachmentDownloadTotal\": 9386,\n      \"attachmentDownloadComplete\": 1333,\n      \"attachmentDownloadFailed\": 5845,\n      \"attachmentDownloadStatus\": \"PARTIAL_FAILURE\"\n    }\n  ],\n  \"nextCursor\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "21c78309-5459-429d-aa24-2184ef11c5d5",
+              "name": "Unauthorized. The `x-api-key` header is missing or invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "ingest",
+                    "batches"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    },
+                    {
+                      "key": "cursor",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "0803c39a-0e6c-400d-83ad-d1d0a31e115b",
+              "name": "Forbidden. The API key does not have the required permission.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "ingest",
+                    "batches"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    },
+                    {
+                      "key": "cursor",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "327cfcec-d558-4c1d-b7ef-c89af3c0f1cb",
+              "name": "Internal server error. Please retry the request.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "ingest",
+                    "batches"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    },
+                    {
+                      "key": "cursor",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "0d7373a7-75c8-4cf6-8fda-ca2d9753d3b0",
+          "name": "/ingest/batches/{batchId}",
+          "request": {
+            "name": "/ingest/batches/{batchId}",
+            "description": {
+              "content": "Returns the current status and record counts for a batch you submitted.\n\nUse this to check whether your records have finished processing.\n\n### Batch lifecycle\n\n| Status | Meaning |\n|---|---|\n| `LANDING` | Your data is being saved |\n| `LANDED` | Your data is saved and waiting to be processed |\n| `PROCESSING` | Your records are being analyzed |\n| `COMPLETE` | All records have been processed |\n| `FAILED` | Something went wrong (check errors for details) |\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "ingest",
+                "batches",
+                ":batchId"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "batchId",
+                  "description": "(Required) The batch ID returned when you sent your records."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": {
+              "type": "apikey",
+              "apikey": [
+                {
+                  "key": "key",
+                  "value": "x-api-key"
+                },
+                {
+                  "key": "value",
+                  "value": "{{apiKey}}"
+                },
+                {
+                  "key": "in",
+                  "value": "header"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "b3c6e362-d731-4600-8d3b-d9add235ea45",
+              "name": "Batch status retrieved successfully.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "ingest",
+                    "batches",
+                    ":batchId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "batchId",
+                      "description": "(Required) The batch ID returned when you sent your records."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"batchId\": \"string\",\n  \"status\": \"LANDED\",\n  \"acceptedCount\": 4843,\n  \"rejectedCount\": 9551,\n  \"totalErrorCount\": 5029,\n  \"createdAt\": 1709282096000,\n  \"errors\": [\n    {\n      \"index\": 2049,\n      \"code\": \"string\",\n      \"message\": \"string\"\n    },\n    {\n      \"index\": 1029,\n      \"code\": \"string\",\n      \"message\": \"string\"\n    }\n  ],\n  \"source\": \"string\",\n  \"type\": \"string\",\n  \"attachmentDownloadTotal\": 4093,\n  \"attachmentDownloadComplete\": 9865,\n  \"attachmentDownloadFailed\": 5819,\n  \"attachmentDownloadStatus\": \"PENDING\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "b80bd60c-558b-4961-b54d-8229ba23621b",
+              "name": "Unauthorized. The `x-api-key` header is missing or invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "ingest",
+                    "batches",
+                    ":batchId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "batchId",
+                      "description": "(Required) The batch ID returned when you sent your records."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "1bccfb67-0cda-457b-a417-c75959f38ed8",
+              "name": "Forbidden. The API key does not have the required permission.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "ingest",
+                    "batches",
+                    ":batchId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "batchId",
+                      "description": "(Required) The batch ID returned when you sent your records."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "9bbaf519-badd-4588-b374-ccf01f0953b5",
+              "name": "Batch not found. The batch ID does not exist or belongs to a different workspace.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "ingest",
+                    "batches",
+                    ":batchId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "batchId",
+                      "description": "(Required) The batch ID returned when you sent your records."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "35e69026-68f4-4891-a6fe-f5754fbe232b",
+              "name": "Internal server error. Please retry the request.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "ingest",
+                    "batches",
+                    ":batchId"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "batchId",
+                      "description": "(Required) The batch ID returned when you sent your records."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: apikey",
+                      "type": "text/plain"
+                    },
+                    "key": "x-api-key",
+                    "value": "<API Key>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.evermuse.com",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "fd61882a-30a2-41a8-bd5d-a25fb7a58cc8",
+    "name": "Evermuse ingestion API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Evermuse API lets you send your data into Evermuse for analysis.\nEach record describes *what* happened and *when*, then you send it as JSON or newline-delimited JSON (NDJSON).\n\n## Quick start\n\n1. Create an API key in **Settings > API Keys** with the `api:write` permission.\n2. `POST /api/v1/ingest` with your records (see examples below).\n3. Check `GET /api/v1/ingest/batches/{batchId}` to track progress.\n\n## Authentication\n\nEvery request must include an `x-api-key` header with your API key (`em_sk_...`).\n\n## Content types\n\n| Content-Type | Use case |\n|---|---|\n| `application/json` | Array of records, or `{ \"records\": [...] }` wrapper |\n| `application/x-ndjson` | High-volume sends — one JSON object per line |\n\n## Batching\n\nAll records in a single request must share the same `_type` and `_product_id`.\nA batch can contain up to 1,000 records.\n",
+      "type": "text/plain"
+    }
+  }
+}
