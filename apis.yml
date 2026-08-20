@@ -53,6 +53,8 @@ apis:
   humanURL: https://docs.evermuse.com/
   baseURL: https://api.evermuse.com
   tags:
+  - Ingestion
+  tags_raw:
   - ingestion
   properties:
   - type: OpenAPI
