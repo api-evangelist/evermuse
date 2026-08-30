@@ -65,7 +65,7 @@ apis:
   humanURL: https://docs.evermuse.com/
   baseURL: https://api.evermuse.com
   tags:
-  - Ingestion
+  - ingestion
   tags_raw:
   - ingestion
   properties:
