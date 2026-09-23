@@ -1,60 +1,20 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Evermuse ingestion API
+  title: Evermuse Ingestion API
   version: 1.0.0
-  description: 'The Evermuse API lets you send your data into Evermuse for analysis.
-
-    Each record describes *what* happened and *when*, then you send it as JSON or newline-delimited JSON (NDJSON).
-
-
-    ## Quick start
-
-
-    1. Create an API key in **Settings > API Keys** with the `api:write` permission.
-
-    2. `POST /api/v1/ingest` with your records (see examples below).
-
-    3. Check `GET /api/v1/ingest/batches/{batchId}` to track progress.
-
-
-    ## Authentication
-
-
-    Every request must include an `x-api-key` header with your API key (`em_sk_...`).
-
-
-    ## Content types
-
-
-    | Content-Type | Use case |
-
-    |---|---|
-
-    | `application/json` | Array of records, or `{ "records": [...] }` wrapper |
-
-    | `application/x-ndjson` | High-volume sends — one JSON object per line |
-
-
-    ## Batching
-
-
-    All records in a single request must share the same `_type` and `_product_id`.
-
-    A batch can contain up to 1,000 records.
-
-    '
+  description: The Evermuse API lets you send your data into Evermuse for analysis.
 servers:
 - url: https://api.evermuse.com
   description: Evermuse API
 tags:
-- name: ingestion
+- name: Ingestion
   description: Send data to Evermuse
 paths:
   /api/v1/ingest:
     post:
       operationId: ingestRecords
       tags:
-      - ingestion
+      - Ingestion
       summary: /ingest
       x-mint:
         href: /api-reference/ingestion/ingest
@@ -73,9 +33,7 @@ paths:
 
         Attachments referenced by `vendor_url` are fetched automatically after the batch is accepted.
 
-        Download progress is available on the batch status endpoint.
-
-        '
+        Download progress is available on the batch status endpoint.'
       security:
       - IngestApiKey: []
       parameters:
@@ -266,16 +224,14 @@ paths:
     get:
       operationId: listBatches
       tags:
-      - ingestion
+      - Ingestion
       summary: /ingest/batches
       x-mint:
         href: /api-reference/ingestion/get-batches
       description: 'Returns a paginated list of batches you''ve submitted, newest first.
 
 
-        Use the `nextCursor` value from the response as the `cursor` query parameter to fetch the next page.
-
-        '
+        Use the `nextCursor` value from the response as the `cursor` query parameter to fetch the next page.'
       security:
       - IngestApiKey: []
       parameters:
@@ -318,7 +274,7 @@ paths:
     get:
       operationId: getBatchStatus
       tags:
-      - ingestion
+      - Ingestion
       summary: /ingest/batches/{batchId}
       x-mint:
         href: /api-reference/ingestion/get-batch-status
@@ -343,9 +299,7 @@ paths:
 
         | `COMPLETE` | All records have been processed |
 
-        | `FAILED` | Something went wrong (check errors for details) |
-
-        '
+        | `FAILED` | Something went wrong (check errors for details) |'
       security:
       - IngestApiKey: []
       parameters:
@@ -373,6 +327,74 @@ paths:
           description: Internal server error. Please retry the request.
 components:
   schemas:
+    IngestRequest:
+      description: 'The request body accepts two shapes:
+
+        - An array of record objects (up to 1,000)
+
+        - An object with a `records` key containing an array
+
+        '
+      oneOf:
+      - type: array
+        minItems: 1
+        maxItems: 1000
+        items:
+          $ref: '#/components/schemas/IngestRecord'
+      - type: object
+        additionalProperties: false
+        required:
+        - records
+        properties:
+          records:
+            type: array
+            minItems: 1
+            maxItems: 1000
+            items:
+              $ref: '#/components/schemas/IngestRecord'
+    IngestRecordError:
+      type: object
+      additionalProperties: false
+      required:
+      - index
+      - code
+      - message
+      properties:
+        index:
+          type: integer
+          minimum: 0
+          description: Position of the rejected record in the submitted batch (0-based).
+        code:
+          type: string
+          maxLength: 64
+          description: Machine-readable error code (e.g., `VALIDATION_ERROR`).
+        message:
+          type: string
+          maxLength: 2048
+          description: Human-readable description of what went wrong.
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - error
+      - message
+      properties:
+        error:
+          type: string
+          maxLength: 64
+          description: Machine-readable error code.
+        message:
+          type: string
+          maxLength: 2048
+          description: Human-readable error description.
+        retryAfter:
+          type: number
+          description: 'Number of seconds to wait before trying again. Included when you''ve hit the rate limit (429 response).
+
+            '
+        details:
+          description: Additional machine-readable context about the error.
+          additionalProperties: true
     IngestBatchListResponse:
       type: object
       additionalProperties: false
@@ -394,44 +416,25 @@ components:
             `null` when there are no more results.
 
             '
-    Pii:
+    PiiEntity:
       type: object
       additionalProperties: false
-      description: 'Optional metadata about personal information in this record.
-
-        Providing this helps Evermuse handle your data with the right privacy safeguards.
-
-        '
+      required:
+      - type
       properties:
-        contains_email:
-          type: boolean
-          description: Whether the record's data contains email addresses.
-        contains_phone:
-          type: boolean
-          description: Whether the record's data contains phone numbers.
-        sensitive_score:
+        type:
+          type: string
+          description: The category of personal information detected (e.g., `email`, `phone`, `ssn`, `credit_card`).
+          maxLength: 64
+        value:
+          type: string
+          description: The detected value (omit if you prefer not to include it).
+          maxLength: 1024
+        confidence:
           type: number
           minimum: 0
           maximum: 1
-          description: 'A score from 0 to 1 indicating the likelihood that the record contains sensitive information.
-
-            0 = no sensitive content, 1 = highly sensitive.
-
-            '
-        detected_entities:
-          type: array
-          description: List of personal information types detected in the record.
-          items:
-            $ref: '#/components/schemas/PiiEntity'
-        redaction_status:
-          type: string
-          enum:
-          - unredacted
-          - redacted
-          - encrypted
-          description: 'Whether personal information in this record has been redacted or encrypted before sending.
-
-            '
+          description: Confidence score for the detection (0 = low, 1 = high).
     IngestAcceptedResponse:
       type: object
       additionalProperties: false
@@ -473,69 +476,6 @@ components:
           maxItems: 20
           items:
             $ref: '#/components/schemas/IngestRecordError'
-    Participant:
-      type: object
-      additionalProperties: false
-      required:
-      - id
-      - role
-      properties:
-        id:
-          type: string
-          description: 'A stable identifier for the participant. Use an email address, phone number,
-
-            or their ID from your source system.
-
-            '
-          maxLength: 256
-        name:
-          type: string
-          description: Display name of the participant.
-          maxLength: 256
-        email:
-          type: string
-          format: email
-          description: Email address of the participant.
-          maxLength: 320
-        role:
-          type: string
-          enum:
-          - internal
-          - external
-          - unknown
-          description: 'Whether the participant is part of your team or an external contact.
-
-            - `internal` — your team member (employee, agent, rep)
-
-            - `external` — a customer, prospect, or outside party
-
-            - `unknown` — role cannot be determined
-
-            '
-        type:
-          type: string
-          enum:
-          - user
-          - contact
-          - workspace_member
-          - bot
-          - system
-          - unknown
-          description: 'The kind of participant.
-
-            - `user` — a human user
-
-            - `contact` — a customer or prospect
-
-            - `workspace_member` — a member of your workspace
-
-            - `bot` — an automated agent
-
-            - `system` — a system-generated entry
-
-            - `unknown` — type cannot be determined
-
-            '
     Attachment:
       type: object
       additionalProperties: false
@@ -603,54 +543,107 @@ components:
 
             '
           maxLength: 256
-    ErrorResponse:
+    Pii:
+      type: object
+      additionalProperties: false
+      description: 'Optional metadata about personal information in this record.
+
+        Providing this helps Evermuse handle your data with the right privacy safeguards.
+
+        '
+      properties:
+        contains_email:
+          type: boolean
+          description: Whether the record's data contains email addresses.
+        contains_phone:
+          type: boolean
+          description: Whether the record's data contains phone numbers.
+        sensitive_score:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: 'A score from 0 to 1 indicating the likelihood that the record contains sensitive information.
+
+            0 = no sensitive content, 1 = highly sensitive.
+
+            '
+        detected_entities:
+          type: array
+          description: List of personal information types detected in the record.
+          items:
+            $ref: '#/components/schemas/PiiEntity'
+        redaction_status:
+          type: string
+          enum:
+          - unredacted
+          - redacted
+          - encrypted
+          description: 'Whether personal information in this record has been redacted or encrypted before sending.
+
+            '
+    Participant:
       type: object
       additionalProperties: false
       required:
-      - error
-      - message
+      - id
+      - role
       properties:
-        error:
+        id:
           type: string
-          maxLength: 64
-          description: Machine-readable error code.
-        message:
-          type: string
-          maxLength: 2048
-          description: Human-readable error description.
-        retryAfter:
-          type: number
-          description: 'Number of seconds to wait before trying again. Included when you''ve hit the rate limit (429 response).
+          description: 'A stable identifier for the participant. Use an email address, phone number,
+
+            or their ID from your source system.
 
             '
-        details:
-          description: Additional machine-readable context about the error.
-          additionalProperties: true
-    IngestRequest:
-      description: 'The request body accepts two shapes:
+          maxLength: 256
+        name:
+          type: string
+          description: Display name of the participant.
+          maxLength: 256
+        email:
+          type: string
+          format: email
+          description: Email address of the participant.
+          maxLength: 320
+        role:
+          type: string
+          enum:
+          - internal
+          - external
+          - unknown
+          description: 'Whether the participant is part of your team or an external contact.
 
-        - An array of record objects (up to 1,000)
+            - `internal` — your team member (employee, agent, rep)
 
-        - An object with a `records` key containing an array
+            - `external` — a customer, prospect, or outside party
 
-        '
-      oneOf:
-      - type: array
-        minItems: 1
-        maxItems: 1000
-        items:
-          $ref: '#/components/schemas/IngestRecord'
-      - type: object
-        additionalProperties: false
-        required:
-        - records
-        properties:
-          records:
-            type: array
-            minItems: 1
-            maxItems: 1000
-            items:
-              $ref: '#/components/schemas/IngestRecord'
+            - `unknown` — role cannot be determined
+
+            '
+        type:
+          type: string
+          enum:
+          - user
+          - contact
+          - workspace_member
+          - bot
+          - system
+          - unknown
+          description: 'The kind of participant.
+
+            - `user` — a human user
+
+            - `contact` — a customer or prospect
+
+            - `workspace_member` — a member of your workspace
+
+            - `bot` — an automated agent
+
+            - `system` — a system-generated entry
+
+            - `unknown` — type cannot be determined
+
+            '
     IngestBatchStatus:
       type: object
       additionalProperties: false
@@ -732,26 +725,6 @@ components:
             Only shown when the batch includes file attachments.
 
             '
-    IngestRecordError:
-      type: object
-      additionalProperties: false
-      required:
-      - index
-      - code
-      - message
-      properties:
-        index:
-          type: integer
-          minimum: 0
-          description: Position of the rejected record in the submitted batch (0-based).
-        code:
-          type: string
-          maxLength: 64
-          description: Machine-readable error code (e.g., `VALIDATION_ERROR`).
-        message:
-          type: string
-          maxLength: 2048
-          description: Human-readable description of what went wrong.
     IngestRecord:
       type: object
       additionalProperties: false
@@ -913,25 +886,6 @@ components:
 
             '
           additionalProperties: true
-    PiiEntity:
-      type: object
-      additionalProperties: false
-      required:
-      - type
-      properties:
-        type:
-          type: string
-          description: The category of personal information detected (e.g., `email`, `phone`, `ssn`, `credit_card`).
-          maxLength: 64
-        value:
-          type: string
-          description: The detected value (omit if you prefer not to include it).
-          maxLength: 1024
-        confidence:
-          type: number
-          minimum: 0
-          maximum: 1
-          description: Confidence score for the detection (0 = low, 1 = high).
   securitySchemes:
     IngestApiKey:
       type: apiKey
