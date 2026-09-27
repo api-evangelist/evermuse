@@ -60,7 +60,7 @@ maintainers:
   email: info@apis.io
 apis:
 - aid: evermuse:evermuse-ingestion-api
-  name: Evermuse ingestion API
+  name: Evermuse Ingestion API
   description: Send data to Evermuse
   humanURL: https://docs.evermuse.com/
   baseURL: https://api.evermuse.com

@@ -327,95 +327,6 @@ paths:
           description: Internal server error. Please retry the request.
 components:
   schemas:
-    IngestRequest:
-      description: 'The request body accepts two shapes:
-
-        - An array of record objects (up to 1,000)
-
-        - An object with a `records` key containing an array
-
-        '
-      oneOf:
-      - type: array
-        minItems: 1
-        maxItems: 1000
-        items:
-          $ref: '#/components/schemas/IngestRecord'
-      - type: object
-        additionalProperties: false
-        required:
-        - records
-        properties:
-          records:
-            type: array
-            minItems: 1
-            maxItems: 1000
-            items:
-              $ref: '#/components/schemas/IngestRecord'
-    IngestRecordError:
-      type: object
-      additionalProperties: false
-      required:
-      - index
-      - code
-      - message
-      properties:
-        index:
-          type: integer
-          minimum: 0
-          description: Position of the rejected record in the submitted batch (0-based).
-        code:
-          type: string
-          maxLength: 64
-          description: Machine-readable error code (e.g., `VALIDATION_ERROR`).
-        message:
-          type: string
-          maxLength: 2048
-          description: Human-readable description of what went wrong.
-    ErrorResponse:
-      type: object
-      additionalProperties: false
-      required:
-      - error
-      - message
-      properties:
-        error:
-          type: string
-          maxLength: 64
-          description: Machine-readable error code.
-        message:
-          type: string
-          maxLength: 2048
-          description: Human-readable error description.
-        retryAfter:
-          type: number
-          description: 'Number of seconds to wait before trying again. Included when you''ve hit the rate limit (429 response).
-
-            '
-        details:
-          description: Additional machine-readable context about the error.
-          additionalProperties: true
-    IngestBatchListResponse:
-      type: object
-      additionalProperties: false
-      required:
-      - batches
-      - nextCursor
-      properties:
-        batches:
-          type: array
-          description: List of batches, ordered by creation time (newest first).
-          items:
-            $ref: '#/components/schemas/IngestBatchStatus'
-        nextCursor:
-          type: string
-          nullable: true
-          maxLength: 256
-          description: 'Pass this value as the `cursor` query parameter to fetch the next page.
-
-            `null` when there are no more results.
-
-            '
     PiiEntity:
       type: object
       additionalProperties: false
@@ -435,6 +346,44 @@ components:
           minimum: 0
           maximum: 1
           description: Confidence score for the detection (0 = low, 1 = high).
+    Pii:
+      type: object
+      additionalProperties: false
+      description: 'Optional metadata about personal information in this record.
+
+        Providing this helps Evermuse handle your data with the right privacy safeguards.
+
+        '
+      properties:
+        contains_email:
+          type: boolean
+          description: Whether the record's data contains email addresses.
+        contains_phone:
+          type: boolean
+          description: Whether the record's data contains phone numbers.
+        sensitive_score:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: 'A score from 0 to 1 indicating the likelihood that the record contains sensitive information.
+
+            0 = no sensitive content, 1 = highly sensitive.
+
+            '
+        detected_entities:
+          type: array
+          description: List of personal information types detected in the record.
+          items:
+            $ref: '#/components/schemas/PiiEntity'
+        redaction_status:
+          type: string
+          enum:
+          - unredacted
+          - redacted
+          - encrypted
+          description: 'Whether personal information in this record has been redacted or encrypted before sending.
+
+            '
     IngestAcceptedResponse:
       type: object
       additionalProperties: false
@@ -476,6 +425,72 @@ components:
           maxItems: 20
           items:
             $ref: '#/components/schemas/IngestRecordError'
+    IngestRequest:
+      description: 'The request body accepts two shapes:
+
+        - An array of record objects (up to 1,000)
+
+        - An object with a `records` key containing an array
+
+        '
+      oneOf:
+      - type: array
+        minItems: 1
+        maxItems: 1000
+        items:
+          $ref: '#/components/schemas/IngestRecord'
+      - type: object
+        additionalProperties: false
+        required:
+        - records
+        properties:
+          records:
+            type: array
+            minItems: 1
+            maxItems: 1000
+            items:
+              $ref: '#/components/schemas/IngestRecord'
+    IngestBatchListResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - batches
+      - nextCursor
+      properties:
+        batches:
+          type: array
+          description: List of batches, ordered by creation time (newest first).
+          items:
+            $ref: '#/components/schemas/IngestBatchStatus'
+        nextCursor:
+          type: string
+          nullable: true
+          maxLength: 256
+          description: 'Pass this value as the `cursor` query parameter to fetch the next page.
+
+            `null` when there are no more results.
+
+            '
+    IngestRecordError:
+      type: object
+      additionalProperties: false
+      required:
+      - index
+      - code
+      - message
+      properties:
+        index:
+          type: integer
+          minimum: 0
+          description: Position of the rejected record in the submitted batch (0-based).
+        code:
+          type: string
+          maxLength: 64
+          description: Machine-readable error code (e.g., `VALIDATION_ERROR`).
+        message:
+          type: string
+          maxLength: 2048
+          description: Human-readable description of what went wrong.
     Attachment:
       type: object
       additionalProperties: false
@@ -543,107 +558,29 @@ components:
 
             '
           maxLength: 256
-    Pii:
-      type: object
-      additionalProperties: false
-      description: 'Optional metadata about personal information in this record.
-
-        Providing this helps Evermuse handle your data with the right privacy safeguards.
-
-        '
-      properties:
-        contains_email:
-          type: boolean
-          description: Whether the record's data contains email addresses.
-        contains_phone:
-          type: boolean
-          description: Whether the record's data contains phone numbers.
-        sensitive_score:
-          type: number
-          minimum: 0
-          maximum: 1
-          description: 'A score from 0 to 1 indicating the likelihood that the record contains sensitive information.
-
-            0 = no sensitive content, 1 = highly sensitive.
-
-            '
-        detected_entities:
-          type: array
-          description: List of personal information types detected in the record.
-          items:
-            $ref: '#/components/schemas/PiiEntity'
-        redaction_status:
-          type: string
-          enum:
-          - unredacted
-          - redacted
-          - encrypted
-          description: 'Whether personal information in this record has been redacted or encrypted before sending.
-
-            '
-    Participant:
+    ErrorResponse:
       type: object
       additionalProperties: false
       required:
-      - id
-      - role
+      - error
+      - message
       properties:
-        id:
+        error:
           type: string
-          description: 'A stable identifier for the participant. Use an email address, phone number,
-
-            or their ID from your source system.
+          maxLength: 64
+          description: Machine-readable error code.
+        message:
+          type: string
+          maxLength: 2048
+          description: Human-readable error description.
+        retryAfter:
+          type: number
+          description: 'Number of seconds to wait before trying again. Included when you''ve hit the rate limit (429 response).
 
             '
-          maxLength: 256
-        name:
-          type: string
-          description: Display name of the participant.
-          maxLength: 256
-        email:
-          type: string
-          format: email
-          description: Email address of the participant.
-          maxLength: 320
-        role:
-          type: string
-          enum:
-          - internal
-          - external
-          - unknown
-          description: 'Whether the participant is part of your team or an external contact.
-
-            - `internal` — your team member (employee, agent, rep)
-
-            - `external` — a customer, prospect, or outside party
-
-            - `unknown` — role cannot be determined
-
-            '
-        type:
-          type: string
-          enum:
-          - user
-          - contact
-          - workspace_member
-          - bot
-          - system
-          - unknown
-          description: 'The kind of participant.
-
-            - `user` — a human user
-
-            - `contact` — a customer or prospect
-
-            - `workspace_member` — a member of your workspace
-
-            - `bot` — an automated agent
-
-            - `system` — a system-generated entry
-
-            - `unknown` — type cannot be determined
-
-            '
+        details:
+          description: Additional machine-readable context about the error.
+          additionalProperties: true
     IngestBatchStatus:
       type: object
       additionalProperties: false
@@ -886,6 +823,69 @@ components:
 
             '
           additionalProperties: true
+    Participant:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - role
+      properties:
+        id:
+          type: string
+          description: 'A stable identifier for the participant. Use an email address, phone number,
+
+            or their ID from your source system.
+
+            '
+          maxLength: 256
+        name:
+          type: string
+          description: Display name of the participant.
+          maxLength: 256
+        email:
+          type: string
+          format: email
+          description: Email address of the participant.
+          maxLength: 320
+        role:
+          type: string
+          enum:
+          - internal
+          - external
+          - unknown
+          description: 'Whether the participant is part of your team or an external contact.
+
+            - `internal` — your team member (employee, agent, rep)
+
+            - `external` — a customer, prospect, or outside party
+
+            - `unknown` — role cannot be determined
+
+            '
+        type:
+          type: string
+          enum:
+          - user
+          - contact
+          - workspace_member
+          - bot
+          - system
+          - unknown
+          description: 'The kind of participant.
+
+            - `user` — a human user
+
+            - `contact` — a customer or prospect
+
+            - `workspace_member` — a member of your workspace
+
+            - `bot` — an automated agent
+
+            - `system` — a system-generated entry
+
+            - `unknown` — type cannot be determined
+
+            '
   securitySchemes:
     IngestApiKey:
       type: apiKey
