@@ -327,25 +327,6 @@ paths:
           description: Internal server error. Please retry the request.
 components:
   schemas:
-    PiiEntity:
-      type: object
-      additionalProperties: false
-      required:
-      - type
-      properties:
-        type:
-          type: string
-          description: The category of personal information detected (e.g., `email`, `phone`, `ssn`, `credit_card`).
-          maxLength: 64
-        value:
-          type: string
-          description: The detected value (omit if you prefer not to include it).
-          maxLength: 1024
-        confidence:
-          type: number
-          minimum: 0
-          maximum: 1
-          description: Confidence score for the detection (0 = low, 1 = high).
     Pii:
       type: object
       additionalProperties: false
@@ -384,113 +365,6 @@ components:
           description: 'Whether personal information in this record has been redacted or encrypted before sending.
 
             '
-    IngestAcceptedResponse:
-      type: object
-      additionalProperties: false
-      required:
-      - batchId
-      - acceptedCount
-      - rejectedCount
-      - totalErrorCount
-      properties:
-        batchId:
-          type: string
-          description: 'Unique identifier for this batch. Use it with `GET /api/v1/ingest/batches/{batchId}` to check status.
-
-            '
-          maxLength: 128
-        acceptedCount:
-          type: integer
-          minimum: 0
-          description: Number of records that passed validation and were accepted.
-        rejectedCount:
-          type: integer
-          minimum: 0
-          description: Number of records that failed validation and were rejected.
-        totalErrorCount:
-          type: integer
-          minimum: 0
-          description: 'Total number of errors across all rejected records.
-
-            May be higher than the `errors` array length since only the first 20 are included.
-
-            '
-        errors:
-          type: array
-          description: 'Up to 20 errors. The `index` field refers to the record''s
-
-            position in the batch you sent (starting from 0).
-
-            '
-          maxItems: 20
-          items:
-            $ref: '#/components/schemas/IngestRecordError'
-    IngestRequest:
-      description: 'The request body accepts two shapes:
-
-        - An array of record objects (up to 1,000)
-
-        - An object with a `records` key containing an array
-
-        '
-      oneOf:
-      - type: array
-        minItems: 1
-        maxItems: 1000
-        items:
-          $ref: '#/components/schemas/IngestRecord'
-      - type: object
-        additionalProperties: false
-        required:
-        - records
-        properties:
-          records:
-            type: array
-            minItems: 1
-            maxItems: 1000
-            items:
-              $ref: '#/components/schemas/IngestRecord'
-    IngestBatchListResponse:
-      type: object
-      additionalProperties: false
-      required:
-      - batches
-      - nextCursor
-      properties:
-        batches:
-          type: array
-          description: List of batches, ordered by creation time (newest first).
-          items:
-            $ref: '#/components/schemas/IngestBatchStatus'
-        nextCursor:
-          type: string
-          nullable: true
-          maxLength: 256
-          description: 'Pass this value as the `cursor` query parameter to fetch the next page.
-
-            `null` when there are no more results.
-
-            '
-    IngestRecordError:
-      type: object
-      additionalProperties: false
-      required:
-      - index
-      - code
-      - message
-      properties:
-        index:
-          type: integer
-          minimum: 0
-          description: Position of the rejected record in the submitted batch (0-based).
-        code:
-          type: string
-          maxLength: 64
-          description: Machine-readable error code (e.g., `VALIDATION_ERROR`).
-        message:
-          type: string
-          maxLength: 2048
-          description: Human-readable description of what went wrong.
     Attachment:
       type: object
       additionalProperties: false
@@ -558,110 +432,50 @@ components:
 
             '
           maxLength: 256
-    ErrorResponse:
+    IngestRequest:
+      description: 'The request body accepts two shapes:
+
+        - An array of record objects (up to 1,000)
+
+        - An object with a `records` key containing an array
+
+        '
+      oneOf:
+      - type: array
+        minItems: 1
+        maxItems: 1000
+        items:
+          $ref: '#/components/schemas/IngestRecord'
+      - type: object
+        additionalProperties: false
+        required:
+        - records
+        properties:
+          records:
+            type: array
+            minItems: 1
+            maxItems: 1000
+            items:
+              $ref: '#/components/schemas/IngestRecord'
+    PiiEntity:
       type: object
       additionalProperties: false
       required:
-      - error
-      - message
+      - type
       properties:
-        error:
-          type: string
-          maxLength: 64
-          description: Machine-readable error code.
-        message:
-          type: string
-          maxLength: 2048
-          description: Human-readable error description.
-        retryAfter:
-          type: number
-          description: 'Number of seconds to wait before trying again. Included when you''ve hit the rate limit (429 response).
-
-            '
-        details:
-          description: Additional machine-readable context about the error.
-          additionalProperties: true
-    IngestBatchStatus:
-      type: object
-      additionalProperties: false
-      required:
-      - batchId
-      - status
-      - acceptedCount
-      - rejectedCount
-      - totalErrorCount
-      - createdAt
-      properties:
-        batchId:
-          type: string
-          maxLength: 128
-          description: Unique identifier for this batch.
-        status:
-          type: string
-          enum:
-          - LANDING
-          - LANDED
-          - PROCESSING
-          - COMPLETE
-          - FAILED
-          description: 'Current processing status of the batch.
-
-            See the batch lifecycle table in the endpoint description.
-
-            '
-        createdAt:
-          type: number
-          description: When the batch was created, as Unix epoch milliseconds.
-          example: 1709282096000
-        acceptedCount:
-          type: integer
-          minimum: 0
-          description: Number of records that passed validation.
-        rejectedCount:
-          type: integer
-          minimum: 0
-          description: Number of records that failed validation.
-        totalErrorCount:
-          type: integer
-          minimum: 0
-          description: Total number of validation errors across rejected records.
-        errors:
-          type: array
-          description: Up to 20 validation errors for quick inspection.
-          maxItems: 20
-          items:
-            $ref: '#/components/schemas/IngestRecordError'
-        source:
-          type: string
-          description: Where the records in this batch came from.
         type:
           type: string
-          description: The record type for this batch.
-        attachmentDownloadTotal:
-          type: integer
-          minimum: 0
-          description: Total number of attachments to be downloaded (shown when the batch includes file attachments).
-        attachmentDownloadComplete:
-          type: integer
-          minimum: 0
-          description: Number of attachments successfully downloaded.
-        attachmentDownloadFailed:
-          type: integer
-          minimum: 0
-          description: Number of attachments that failed to download.
-        attachmentDownloadStatus:
+          description: The category of personal information detected (e.g., `email`, `phone`, `ssn`, `credit_card`).
+          maxLength: 64
+        value:
           type: string
-          enum:
-          - PENDING
-          - IN_PROGRESS
-          - COMPLETE
-          - PARTIAL_FAILURE
-          - FAILED
-          description: 'Overall download status for the batch''s attachments.
-
-            Only shown when the batch includes file attachments.
-
-            '
+          description: The detected value (omit if you prefer not to include it).
+          maxLength: 1024
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Confidence score for the detection (0 = low, 1 = high).
     IngestRecord:
       type: object
       additionalProperties: false
@@ -823,6 +637,149 @@ components:
 
             '
           additionalProperties: true
+    IngestAcceptedResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - batchId
+      - acceptedCount
+      - rejectedCount
+      - totalErrorCount
+      properties:
+        batchId:
+          type: string
+          description: 'Unique identifier for this batch. Use it with `GET /api/v1/ingest/batches/{batchId}` to check status.
+
+            '
+          maxLength: 128
+        acceptedCount:
+          type: integer
+          minimum: 0
+          description: Number of records that passed validation and were accepted.
+        rejectedCount:
+          type: integer
+          minimum: 0
+          description: Number of records that failed validation and were rejected.
+        totalErrorCount:
+          type: integer
+          minimum: 0
+          description: 'Total number of errors across all rejected records.
+
+            May be higher than the `errors` array length since only the first 20 are included.
+
+            '
+        errors:
+          type: array
+          description: 'Up to 20 errors. The `index` field refers to the record''s
+
+            position in the batch you sent (starting from 0).
+
+            '
+          maxItems: 20
+          items:
+            $ref: '#/components/schemas/IngestRecordError'
+    IngestBatchListResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - batches
+      - nextCursor
+      properties:
+        batches:
+          type: array
+          description: List of batches, ordered by creation time (newest first).
+          items:
+            $ref: '#/components/schemas/IngestBatchStatus'
+        nextCursor:
+          type: string
+          nullable: true
+          maxLength: 256
+          description: 'Pass this value as the `cursor` query parameter to fetch the next page.
+
+            `null` when there are no more results.
+
+            '
+    IngestBatchStatus:
+      type: object
+      additionalProperties: false
+      required:
+      - batchId
+      - status
+      - acceptedCount
+      - rejectedCount
+      - totalErrorCount
+      - createdAt
+      properties:
+        batchId:
+          type: string
+          maxLength: 128
+          description: Unique identifier for this batch.
+        status:
+          type: string
+          enum:
+          - LANDING
+          - LANDED
+          - PROCESSING
+          - COMPLETE
+          - FAILED
+          description: 'Current processing status of the batch.
+
+            See the batch lifecycle table in the endpoint description.
+
+            '
+        createdAt:
+          type: number
+          description: When the batch was created, as Unix epoch milliseconds.
+          example: 1709282096000
+        acceptedCount:
+          type: integer
+          minimum: 0
+          description: Number of records that passed validation.
+        rejectedCount:
+          type: integer
+          minimum: 0
+          description: Number of records that failed validation.
+        totalErrorCount:
+          type: integer
+          minimum: 0
+          description: Total number of validation errors across rejected records.
+        errors:
+          type: array
+          description: Up to 20 validation errors for quick inspection.
+          maxItems: 20
+          items:
+            $ref: '#/components/schemas/IngestRecordError'
+        source:
+          type: string
+          description: Where the records in this batch came from.
+        type:
+          type: string
+          description: The record type for this batch.
+        attachmentDownloadTotal:
+          type: integer
+          minimum: 0
+          description: Total number of attachments to be downloaded (shown when the batch includes file attachments).
+        attachmentDownloadComplete:
+          type: integer
+          minimum: 0
+          description: Number of attachments successfully downloaded.
+        attachmentDownloadFailed:
+          type: integer
+          minimum: 0
+          description: Number of attachments that failed to download.
+        attachmentDownloadStatus:
+          type: string
+          enum:
+          - PENDING
+          - IN_PROGRESS
+          - COMPLETE
+          - PARTIAL_FAILURE
+          - FAILED
+          description: 'Overall download status for the batch''s attachments.
+
+            Only shown when the batch includes file attachments.
+
+            '
     Participant:
       type: object
       additionalProperties: false
@@ -886,6 +843,49 @@ components:
             - `unknown` — type cannot be determined
 
             '
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - error
+      - message
+      properties:
+        error:
+          type: string
+          maxLength: 64
+          description: Machine-readable error code.
+        message:
+          type: string
+          maxLength: 2048
+          description: Human-readable error description.
+        retryAfter:
+          type: number
+          description: 'Number of seconds to wait before trying again. Included when you''ve hit the rate limit (429 response).
+
+            '
+        details:
+          description: Additional machine-readable context about the error.
+          additionalProperties: true
+    IngestRecordError:
+      type: object
+      additionalProperties: false
+      required:
+      - index
+      - code
+      - message
+      properties:
+        index:
+          type: integer
+          minimum: 0
+          description: Position of the rejected record in the submitted batch (0-based).
+        code:
+          type: string
+          maxLength: 64
+          description: Machine-readable error code (e.g., `VALIDATION_ERROR`).
+        message:
+          type: string
+          maxLength: 2048
+          description: Human-readable description of what went wrong.
   securitySchemes:
     IngestApiKey:
       type: apiKey
