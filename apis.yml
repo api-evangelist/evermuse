@@ -95,6 +95,8 @@ apis:
   - type: AgenticAccess
     url: agentic-access/evermuse-agentic-access.yml
 common:
+- type: Plans
+  url: plans/evermuse-plans-pricing.yml
 - type: Overlay
   url: overlays/evermuse-ingest-v1-overlay.yaml
 - type: Website
