@@ -1,0 +1,90 @@
+# Pricing transcribed from the provider's own page — see provenance. Numbers are quoted, not derived.
+generated: '2026-10-07'
+method: searched
+source: https://www.evermuse.com/pricing
+sources:
+- https://www.evermuse.com/pricing
+provenance:
+  tool: all/0-working/economics/harvest_pricing.py
+  run: 20261007T104522
+  grounding: every price_text was found verbatim in the fetched page text
+audience: business-product
+pricing_basis: tiered-subscription
+delivery:
+  delivery: managed
+  method: page
+  read: '2026-10-07'
+published: true
+note: Monthly/Annual toggle with 'Save 30%'; prices shown as billed annually. Credit overages per tier;
+  Enterprise is contact sales.
+plan_count: 4
+currency: USD
+plans:
+- name: Starter
+  price_text: $ 35
+  price: 35
+  currency: USD
+  period: month
+  unit: per month, billed annually
+  included_quota: Includes 250 credits, enough for ~8 customer calls; Single user account; Full functionality;
+    14-day money back guarantee
+  overage: $0.20 / credit
+- name: Early Stage
+  price_text: $ 70
+  price: 70
+  currency: USD
+  period: month
+  unit: per month, billed annually
+  included_quota: Includes 1,200 credits, enough for ~40 customer calls; Up to 3 users; Up to 50 employees
+  overage: $0.10 / credit
+- name: Growth Stage
+  price_text: $ 350
+  price: 350
+  currency: USD
+  period: month
+  unit: per month, billed annually
+  included_quota: Includes 6,000 credits, enough for ~200 customer calls; Up to 15 users; Up to 500 employees
+  overage: $0.08 / credit
+- name: Enterprise
+  price_text: Let's Talk!
+  period: none
+  included_quota: For companies with more than 500 employees. Unlimited Seats, Unlimited Integrations,
+    Sophisticated team permissions
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - hybrid
+  units: []
+  plans:
+  - name: Starter
+    access: other
+    model: hybrid
+    model_how: derived
+    units:
+    - other
+    periods:
+    - month
+  - name: Early Stage
+    access: other
+    model: hybrid
+    model_how: derived
+    units:
+    - other
+    periods:
+    - month
+  - name: Growth Stage
+    access: other
+    model: hybrid
+    model_how: derived
+    units:
+    - other
+    periods:
+    - month
+  - name: Enterprise
+    access: other
+    model: unstated
+    model_how: derived
+    units: []
+    periods:
+    - none

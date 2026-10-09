@@ -51,3 +51,22 @@ deployment:
   probe: gated
   checked: '2026-08-12'
   source: catalog MCP census
+rfc9728:
+  endpoint: https://api.evermuse.com/api/mcp
+  metadata_url: https://api.evermuse.com/.well-known/oauth-protected-resource
+  discovered_via: WWW-Authenticate resource_metadata on an anonymous POST initialize
+  fetched: '2026-09-25'
+  http_status: 200
+  content_type: application/json
+  document:
+    resource: https://api.evermuse.com/api/mcp
+    authorization_servers:
+    - https://api.evermuse.com
+    scopes_supported:
+    - mcp:read
+    - mcp:write
+    - mcp:thirdparty
+    - openid
+    - email
+    bearer_methods_supported:
+    - header
