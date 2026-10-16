@@ -2,6 +2,13 @@
   "repo": "evermuse",
   "feeds": [
     {
+      "source": "https://www.evermuse.com/blog",
+      "feed_url": "https://www.evermuse.com/blog",
+      "title": "",
+      "saved": 0,
+      "method": "none"
+    },
+    {
       "source": "https://docs.evermuse.com/",
       "feed_url": "https://docs.evermuse.com/",
       "title": "",
@@ -10,5 +17,5 @@
     }
   ],
   "post_count": 0,
-  "fetched": "2026-10-03T12:30:02Z"
+  "fetched": "2026-10-10T13:15:00Z"
 }
