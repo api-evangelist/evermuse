@@ -327,6 +327,29 @@ paths:
           description: Internal server error. Please retry the request.
 components:
   schemas:
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - error
+      - message
+      properties:
+        error:
+          type: string
+          maxLength: 64
+          description: Machine-readable error code.
+        message:
+          type: string
+          maxLength: 2048
+          description: Human-readable error description.
+        retryAfter:
+          type: number
+          description: 'Number of seconds to wait before trying again. Included when you''ve hit the rate limit (429 response).
+
+            '
+        details:
+          description: Additional machine-readable context about the error.
+          additionalProperties: true
     IngestRecord:
       type: object
       additionalProperties: false
@@ -488,116 +511,6 @@ components:
 
             '
           additionalProperties: true
-    IngestBatchListResponse:
-      type: object
-      additionalProperties: false
-      required:
-      - batches
-      - nextCursor
-      properties:
-        batches:
-          type: array
-          description: List of batches, ordered by creation time (newest first).
-          items:
-            $ref: '#/components/schemas/IngestBatchStatus'
-        nextCursor:
-          type: string
-          nullable: true
-          maxLength: 256
-          description: 'Pass this value as the `cursor` query parameter to fetch the next page.
-
-            `null` when there are no more results.
-
-            '
-    IngestRequest:
-      description: 'The request body accepts two shapes:
-
-        - An array of record objects (up to 1,000)
-
-        - An object with a `records` key containing an array
-
-        '
-      oneOf:
-      - type: array
-        minItems: 1
-        maxItems: 1000
-        items:
-          $ref: '#/components/schemas/IngestRecord'
-      - type: object
-        additionalProperties: false
-        required:
-        - records
-        properties:
-          records:
-            type: array
-            minItems: 1
-            maxItems: 1000
-            items:
-              $ref: '#/components/schemas/IngestRecord'
-    IngestAcceptedResponse:
-      type: object
-      additionalProperties: false
-      required:
-      - batchId
-      - acceptedCount
-      - rejectedCount
-      - totalErrorCount
-      properties:
-        batchId:
-          type: string
-          description: 'Unique identifier for this batch. Use it with `GET /api/v1/ingest/batches/{batchId}` to check status.
-
-            '
-          maxLength: 128
-        acceptedCount:
-          type: integer
-          minimum: 0
-          description: Number of records that passed validation and were accepted.
-        rejectedCount:
-          type: integer
-          minimum: 0
-          description: Number of records that failed validation and were rejected.
-        totalErrorCount:
-          type: integer
-          minimum: 0
-          description: 'Total number of errors across all rejected records.
-
-            May be higher than the `errors` array length since only the first 20 are included.
-
-            '
-        errors:
-          type: array
-          description: 'Up to 20 errors. The `index` field refers to the record''s
-
-            position in the batch you sent (starting from 0).
-
-            '
-          maxItems: 20
-          items:
-            $ref: '#/components/schemas/IngestRecordError'
-    ErrorResponse:
-      type: object
-      additionalProperties: false
-      required:
-      - error
-      - message
-      properties:
-        error:
-          type: string
-          maxLength: 64
-          description: Machine-readable error code.
-        message:
-          type: string
-          maxLength: 2048
-          description: Human-readable error description.
-        retryAfter:
-          type: number
-          description: 'Number of seconds to wait before trying again. Included when you''ve hit the rate limit (429 response).
-
-            '
-        details:
-          description: Additional machine-readable context about the error.
-          additionalProperties: true
     Attachment:
       type: object
       additionalProperties: false
@@ -665,6 +578,85 @@ components:
 
             '
           maxLength: 256
+    Pii:
+      type: object
+      additionalProperties: false
+      description: 'Optional metadata about personal information in this record.
+
+        Providing this helps Evermuse handle your data with the right privacy safeguards.
+
+        '
+      properties:
+        contains_email:
+          type: boolean
+          description: Whether the record's data contains email addresses.
+        contains_phone:
+          type: boolean
+          description: Whether the record's data contains phone numbers.
+        sensitive_score:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: 'A score from 0 to 1 indicating the likelihood that the record contains sensitive information.
+
+            0 = no sensitive content, 1 = highly sensitive.
+
+            '
+        detected_entities:
+          type: array
+          description: List of personal information types detected in the record.
+          items:
+            $ref: '#/components/schemas/PiiEntity'
+        redaction_status:
+          type: string
+          enum:
+          - unredacted
+          - redacted
+          - encrypted
+          description: 'Whether personal information in this record has been redacted or encrypted before sending.
+
+            '
+    IngestAcceptedResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - batchId
+      - acceptedCount
+      - rejectedCount
+      - totalErrorCount
+      properties:
+        batchId:
+          type: string
+          description: 'Unique identifier for this batch. Use it with `GET /api/v1/ingest/batches/{batchId}` to check status.
+
+            '
+          maxLength: 128
+        acceptedCount:
+          type: integer
+          minimum: 0
+          description: Number of records that passed validation and were accepted.
+        rejectedCount:
+          type: integer
+          minimum: 0
+          description: Number of records that failed validation and were rejected.
+        totalErrorCount:
+          type: integer
+          minimum: 0
+          description: 'Total number of errors across all rejected records.
+
+            May be higher than the `errors` array length since only the first 20 are included.
+
+            '
+        errors:
+          type: array
+          description: 'Up to 20 errors. The `index` field refers to the record''s
+
+            position in the batch you sent (starting from 0).
+
+            '
+          maxItems: 20
+          items:
+            $ref: '#/components/schemas/IngestRecordError'
     IngestBatchStatus:
       type: object
       additionalProperties: false
@@ -746,64 +738,25 @@ components:
             Only shown when the batch includes file attachments.
 
             '
-    Pii:
-      type: object
-      additionalProperties: false
-      description: 'Optional metadata about personal information in this record.
-
-        Providing this helps Evermuse handle your data with the right privacy safeguards.
-
-        '
-      properties:
-        contains_email:
-          type: boolean
-          description: Whether the record's data contains email addresses.
-        contains_phone:
-          type: boolean
-          description: Whether the record's data contains phone numbers.
-        sensitive_score:
-          type: number
-          minimum: 0
-          maximum: 1
-          description: 'A score from 0 to 1 indicating the likelihood that the record contains sensitive information.
-
-            0 = no sensitive content, 1 = highly sensitive.
-
-            '
-        detected_entities:
-          type: array
-          description: List of personal information types detected in the record.
-          items:
-            $ref: '#/components/schemas/PiiEntity'
-        redaction_status:
-          type: string
-          enum:
-          - unredacted
-          - redacted
-          - encrypted
-          description: 'Whether personal information in this record has been redacted or encrypted before sending.
-
-            '
-    IngestRecordError:
+    PiiEntity:
       type: object
       additionalProperties: false
       required:
-      - index
-      - code
-      - message
+      - type
       properties:
-        index:
-          type: integer
-          minimum: 0
-          description: Position of the rejected record in the submitted batch (0-based).
-        code:
+        type:
           type: string
+          description: The category of personal information detected (e.g., `email`, `phone`, `ssn`, `credit_card`).
           maxLength: 64
-          description: Machine-readable error code (e.g., `VALIDATION_ERROR`).
-        message:
+        value:
           type: string
-          maxLength: 2048
-          description: Human-readable description of what went wrong.
+          description: The detected value (omit if you prefer not to include it).
+          maxLength: 1024
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Confidence score for the detection (0 = low, 1 = high).
     Participant:
       type: object
       additionalProperties: false
@@ -867,25 +820,72 @@ components:
             - `unknown` — type cannot be determined
 
             '
-    PiiEntity:
+    IngestBatchListResponse:
       type: object
       additionalProperties: false
       required:
-      - type
+      - batches
+      - nextCursor
       properties:
-        type:
+        batches:
+          type: array
+          description: List of batches, ordered by creation time (newest first).
+          items:
+            $ref: '#/components/schemas/IngestBatchStatus'
+        nextCursor:
           type: string
-          description: The category of personal information detected (e.g., `email`, `phone`, `ssn`, `credit_card`).
-          maxLength: 64
-        value:
-          type: string
-          description: The detected value (omit if you prefer not to include it).
-          maxLength: 1024
-        confidence:
-          type: number
+          nullable: true
+          maxLength: 256
+          description: 'Pass this value as the `cursor` query parameter to fetch the next page.
+
+            `null` when there are no more results.
+
+            '
+    IngestRecordError:
+      type: object
+      additionalProperties: false
+      required:
+      - index
+      - code
+      - message
+      properties:
+        index:
+          type: integer
           minimum: 0
-          maximum: 1
-          description: Confidence score for the detection (0 = low, 1 = high).
+          description: Position of the rejected record in the submitted batch (0-based).
+        code:
+          type: string
+          maxLength: 64
+          description: Machine-readable error code (e.g., `VALIDATION_ERROR`).
+        message:
+          type: string
+          maxLength: 2048
+          description: Human-readable description of what went wrong.
+    IngestRequest:
+      description: 'The request body accepts two shapes:
+
+        - An array of record objects (up to 1,000)
+
+        - An object with a `records` key containing an array
+
+        '
+      oneOf:
+      - type: array
+        minItems: 1
+        maxItems: 1000
+        items:
+          $ref: '#/components/schemas/IngestRecord'
+      - type: object
+        additionalProperties: false
+        required:
+        - records
+        properties:
+          records:
+            type: array
+            minItems: 1
+            maxItems: 1000
+            items:
+              $ref: '#/components/schemas/IngestRecord'
   securitySchemes:
     IngestApiKey:
       type: apiKey
