@@ -898,3 +898,9 @@ components:
         Format: `em_sk_...`
 
         '
+x-provenance:
+  method: harvested
+  publisher: Evermuse
+  source: https://docs.evermuse.com/openapi/ingest-v1.yaml
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
