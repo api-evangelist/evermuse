@@ -64,6 +64,136 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Evermuse is a company surfaced as a portfolio company of 500-global and added to the API Evangelist network as a stub for enrichment. This profile is a lead awaiting the enrichment pipeline.
+Evermuse is an AI advisor for product teams that turns every customer signal — sales and success calls, support conversations, meeting notes, emails, surveys, and reviews — into code-ready, well-researched feature specifications. Its Ingestion API accepts records wrapped in a canonical Integration Envelope (JSON or NDJSON), validates, normalizes, deduplicates, and stores them in the Evermuse Data Lake for AI analysis into user needs, feature requests, and prioritized opportunities. Evermuse also publishes a hosted, OAuth 2.1-protected Model Context Protocol (MCP) server that plugs Claude, ChatGPT, Cursor, and other agents directly into a workspace's real customer evidence and live roadmap.
 
-Backed by: 500-global — https://evermuse.com
+**Areas:** Company · Product Management · Customer Feedback · Voice of Customer · Artificial Intelligence · Data Ingestion · Product Analytics · MCP · Developer Tools
+
+## Evermuse on APIs.io
+
+Everything profiled for Evermuse is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/evermuse/](https://apis.io/providers/evermuse/)** — or go straight to one of the APIs or properties below.
+
+### APIs (1)
+
+- [Evermuse Ingestion API](https://apis.io/apis/evermuse/evermuse-ingestion-api/) — Send data to Evermuse
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [evermuse-mcp.yml](https://apis.io/servers/evermuse/evermuse-mcp-yml/)
+
+#### Agentic access (1)
+
+Which operations an agent can call, which act, and which need a human in the loop.
+
+- [Evermuse Agentic Access](https://apis.io/agentic-access/evermuse/evermuse-agentic-access/)
+
+#### Collections (1)
+
+Postman and Open Collection request collections.
+
+- [Evermuse ingestion API](https://apis.io/collections/evermuse/open-evermuse-ingestion-api/)
+
+#### Overlays (1)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Evermuse Ingest V1 Overlay](https://apis.io/overlays/evermuse/evermuse-ingest-v1-overlay/)
+
+#### Security (4)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Evermuse Authentication](https://apis.io/security/evermuse/evermuse-authentication/)
+- [Evermuse Domain Security](https://apis.io/security/evermuse/evermuse-domain-security/)
+- [Evermuse Trust Center](https://apis.io/security/evermuse/evermuse-trust-center/)
+- [Evermuse Vulnerability Disclosure](https://apis.io/security/evermuse/evermuse-vulnerability-disclosure/)
+
+#### OAuth scopes (1)
+
+The permissions the API asks for.
+
+- [Evermuse Scopes](https://apis.io/scopes/evermuse/evermuse-scopes/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Evermuse Plans Pricing](https://apis.io/plans/evermuse/evermuse-plans-pricing/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://evermuse.com)
+- [Documentation](https://docs.evermuse.com/)
+- [Getting started](https://docs.evermuse.com/)
+- [API reference](https://docs.evermuse.com/api-reference/index)
+- [Pricing](https://www.evermuse.com/pricing)
+- [Sign up](https://app.evermuse.com/)
+- [Support](https://www.evermuse.com/contact)
+- [Blog](https://www.evermuse.com/blog)
+- [Security](https://www.evermuse.com/security)
+- [Compliance](https://www.evermuse.com/security)
+- [Terms of service](https://www.evermuse.com/tos)
+- [Privacy policy](https://www.evermuse.com/privacy-policy)
+- [Status](https://evermuse.checkly-status-page.com/)
+
+## API Evangelist rating
+
+**Kin Score 58.9** — strong · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 75.0 |
+| Contract quality | 51.6 |
+| Contract governance | 18.2 |
+| Operational transparency | 42.1 |
+| Developer ergonomics | 58.9 |
+| Access clarity | 78.9 |
+
+**Agent readiness 53.7** — agent-ready (gated down from agent-native)
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | — |
+| MCP Server | verified |
+| Auth Clarity | served (partial credit) |
+| Idempotency | verified |
+| Error Semantics | derived (partial credit) |
+| OpenAPI Examples | partial |
+| Rate Limit Signal | — |
+| Event Surface Described | — |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | served (partial credit) |
+| Protected Resource Metadata | verified |
+| Dynamic Client Registration | yes |
+| Agentic Commerce | — |
+| Pagination Ratio | na |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 41.8** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/evermuse/](https://apis.io/providers/evermuse/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Evermuse: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/evermuse/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
